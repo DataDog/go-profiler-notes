@@ -20,6 +20,6 @@ The payload uses `multipart/form-data` encoding and includes the following form 
 - `recording-end`: The batch end time formatted as `2006-01-02T15:04:05Z07:00` in UTC.
 - `tags[]`: The profiler's `p.cfg.tags` + `service:p.cfg.service` + `env:p.cfg.env` + `host:bat.host` (if set) + `runtime:go`
 - `types[0..n]`: The comma separates types included in each profile, e.g. `alloc_objects,alloc_space,inuse_objects,inuse_space`.
-- `data[0..n]`: One file field for each profile. filename is always `pprof-data`.
+- `data[0..n]`: One file field for each profile. The filename is always `pprof-data`, and the pprof data is compressed (by Go).
 
 TODO: Link to a sample payload file.
