@@ -10,6 +10,10 @@ Look at the go source code to understand how the data is captured, what role run
 
 Think through sampling rate issues, alloc size classes, etc.
 
+## Performance Overhead
+
+Talk about performance overhead ...
+
 ## Data Format
 
 Figure out how the data ends up in the pprof file.
