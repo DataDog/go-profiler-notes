@@ -50,8 +50,7 @@ For those interested in seeing data closer to the raw binary storage, we need th
 Now let's take a look at the same CPU profile from above:
 
 ```
-$ gzcat examples/cpu/pprof.samples.cpu.001.pb.gz | \
-  protoc --decode perftools.profiles.Profile  ./profile.proto
+$ gzcat examples/cpu/pprof.samples.cpu.001.pb.gz | protoc --decode perftools.profiles.Profile ./profile.proto
 
 sample_type {
   type: 1
