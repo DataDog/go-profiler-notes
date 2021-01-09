@@ -2,15 +2,27 @@
 
 The various profilers built into Go are designed to work with the [pprof visualization tool](https://github.com/google/pprof). The upstream pprof tool is designed to work with C++, Java and Go programs, but it's recommended to access the tool via the `go tool pprof` version that's [bundled](https://github.com/golang/go/tree/master/src/cmd/pprof) with the Go core. It's largely the same except for a few tweaks.
 
-## pprof Format
+## Features
 
-The pprof tool defines a [protocol buffer](https://developers.google.com/protocol-buffers) output format, which is described in great detail in this [README](https://github.com/google/pprof/blob/master/proto/README.md) as well as the [profile.proto](https://github.com/google/pprof/blob/master/proto/profile.proto) definition file itself. The format is used for all profiling in Go, and the protocol buffer data files themselves are always comressed using gzip.
+The pprof tool features an interactive command line interface, but also a Web UI, as well as various other output format options.
 
-TODO: Give a better high level introduction
+## File Format
 
-## Decoding pprof Files
+The pprof tool defines a [protocol buffer](https://developers.google.com/protocol-buffers) output format, which is always stored with gzip compression and described in great detail this [README](https://github.com/google/pprof/blob/master/proto/README.md) as well as the [profile.proto](https://github.com/google/pprof/blob/master/proto/profile.proto) definition file itself.
 
-### Using `go tool pprof`
+### Simple Description
+
+pprof's data format appears to be designed to for efficency, multiple languages and different profile types (CPU, Heap, etc.), but because of this it's very abstract and full of indirection. If you want all the details, follow the links above. If you want the **tl;dr**, keep reading:
+
+A pprof file usually contains a list of **stack traces** called *Samples* that usually have one or more numeric **values** associated with them. For a CPU profile the value might be the CPU time duration in nanoseonds that the stack trace was observed for during profiling. For a heap profile it might be the number of bytes allocated. In addition to the values, each stack trace can also include a set of **labels**. The labels are key-value pairs and can even include a unit. In Go those labels are used for [profiler labels](https://rakyll.org/profiler-labels/).
+
+The profile also includes the **time** (in UTC) that the profile was recorded, and the **duration** of the recording.
+
+Additionally the format allows for **drop/keep** regexes for excluding/including certain stack traces, but it's not clear to me if Go is using those at all. There is also room for a list of **comments**, as well as describing the **periodic** interval at which samples were taken.
+
+### Decoding
+
+#### Using `go tool pprof`
 
 The easiest way to decode a pprof file and see its contents is to use  `go tool pprof -raw`. The output is formatted for human readability, so arguabiliy it's not as  `-raw` as the `protoc` output shown later on.
 
@@ -43,7 +55,7 @@ Mappings
 
 The output above is truncated, [examples/cpu/pprof.samples.cpu.001.pprof.txt](./examples/cpu/pprof.samples.cpu.001.pprof.txt) has the full version.
 
-### Using `protoc`
+#### Using `protoc`
 
 For those interested in seeing data closer to the raw binary storage, we need the `protoc` protocol buffer compiler. On macOS you can use `brew install protobuf` to install it, for other platform take a look at the [README's install section](https://github.com/protocolbuffers/protobuf#protocol-compiler-installation).
 
@@ -130,3 +142,9 @@ period: 10000000
 ```
 
 The output above is truncated also, [pprof.samples.cpu.001.protoc.txt](./examples/cpu/pprof.samples.cpu.001.protoc.txt) has the full version.
+
+## Todo
+
+- Write more about using `go tool pprof` itself.
+- Explain why pprof can be given a path to the binary the profile belongs to.
+- Get into more details about line numbers / addresses.
