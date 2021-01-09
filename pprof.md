@@ -8,9 +8,9 @@ The pprof tool features an interactive command line interface, but also a Web UI
 
 ## File Format
 
-The pprof tool defines a [protocol buffer](https://developers.google.com/protocol-buffers) output format, which is always stored with gzip compression and described in great detail this [README](https://github.com/google/pprof/blob/master/proto/README.md) as well as the [profile.proto](https://github.com/google/pprof/blob/master/proto/profile.proto) definition file itself.
+### Description
 
-### Simple Description
+The pprof tool defines a [protocol buffer](https://developers.google.com/protocol-buffers) output format, which is always stored with gzip compression and described in great detail this [README](https://github.com/google/pprof/blob/master/proto/README.md) as well as the [profile.proto](https://github.com/google/pprof/blob/master/proto/profile.proto) definition file itself.
 
 pprof's data format appears to be designed to for efficency, multiple languages and different profile types (CPU, Heap, etc.), but because of this it's very abstract and full of indirection. If you want all the details, follow the links above. If you want the **tl;dr**, keep reading:
 
