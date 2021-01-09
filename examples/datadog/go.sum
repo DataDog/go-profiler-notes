@@ -1,0 +1,7 @@
+github.com/DataDog/datadog-go v4.2.0+incompatible h1:Q73jzyKHwyA04Gf4SSukRF+KR4wJEimU6tAuU0B8Y4Y=
+github.com/DataDog/datadog-go v4.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
+github.com/google/uuid v1.1.4 h1:0ecGp3skIrHWPNGPJDaBIghfA6Sp7Ruo2Io8eLKzWm0=
+github.com/google/uuid v1.1.4/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/tinylib/msgp v1.1.2/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=
+gopkg.in/DataDog/dd-trace-go.v1 v1.28.0 h1:EmglUJuykRsTwsQDcKaAo3CmOunWU6Dqk7U2lo7Pjss=
+gopkg.in/DataDog/dd-trace-go.v1 v1.28.0/go.mod h1:Sp1lku8WJMvNV0kjDI4Ni/T7J/U3BO5ct5kEaoVU8+I=
