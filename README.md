@@ -10,6 +10,7 @@ I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on 
 - Heap Profiler
 - Mutex Profiler
 - Goroutine Profiler
+- Block Profiler
 - Wallclock Profiler (fgprof)
 
 ## External Links
