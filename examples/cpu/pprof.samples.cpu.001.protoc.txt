@@ -1,0 +1,564 @@
+sample_type {
+  type: 1
+  unit: 2
+}
+sample_type {
+  type: 3
+  unit: 4
+}
+sample {
+  location_id: 1
+  location_id: 2
+  location_id: 3
+  value: 19
+  value: 190000000
+}
+sample {
+  location_id: 4
+  location_id: 5
+  location_id: 2
+  location_id: 3
+  value: 5
+  value: 50000000
+}
+sample {
+  location_id: 6
+  location_id: 7
+  location_id: 8
+  location_id: 9
+  location_id: 10
+  location_id: 11
+  location_id: 12
+  location_id: 13
+  location_id: 14
+  value: 1
+  value: 10000000
+}
+sample {
+  location_id: 15
+  location_id: 16
+  location_id: 17
+  location_id: 11
+  location_id: 18
+  location_id: 14
+  value: 1
+  value: 10000000
+}
+sample {
+  location_id: 6
+  location_id: 7
+  location_id: 8
+  location_id: 9
+  location_id: 10
+  location_id: 11
+  location_id: 18
+  location_id: 14
+  value: 2
+  value: 20000000
+}
+sample {
+  location_id: 19
+  location_id: 20
+  location_id: 21
+  location_id: 22
+  location_id: 23
+  location_id: 24
+  location_id: 14
+  value: 7
+  value: 70000000
+}
+sample {
+  location_id: 25
+  location_id: 26
+  location_id: 27
+  location_id: 28
+  value: 3
+  value: 30000000
+}
+mapping {
+  id: 1
+  has_functions: true
+}
+location {
+  id: 1
+  mapping_id: 1
+  address: 20393855
+  line {
+    function_id: 1
+    line: 39
+  }
+}
+location {
+  id: 2
+  mapping_id: 1
+  address: 20394226
+  line {
+    function_id: 2
+    line: 31
+  }
+}
+location {
+  id: 3
+  mapping_id: 1
+  address: 20393208
+  line {
+    function_id: 3
+    line: 57
+  }
+}
+location {
+  id: 4
+  mapping_id: 1
+  address: 17240512
+  line {
+    function_id: 4
+    line: 7
+  }
+}
+location {
+  id: 5
+  mapping_id: 1
+  address: 20393854
+  line {
+    function_id: 1
+    line: 37
+  }
+}
+location {
+  id: 6
+  mapping_id: 1
+  address: 17139096
+  line {
+    function_id: 5
+    line: 414
+  }
+}
+location {
+  id: 7
+  mapping_id: 1
+  address: 16994732
+  line {
+    function_id: 6
+    line: 63
+  }
+}
+location {
+  id: 8
+  mapping_id: 1
+  address: 16834054
+  line {
+    function_id: 7
+    line: 181
+  }
+}
+location {
+  id: 9
+  mapping_id: 1
+  address: 17034852
+  line {
+    function_id: 8
+    line: 1924
+  }
+}
+location {
+  id: 10
+  mapping_id: 1
+  address: 17040958
+  line {
+    function_id: 9
+    line: 2485
+  }
+}
+location {
+  id: 11
+  mapping_id: 1
+  address: 17044150
+  line {
+    function_id: 10
+    line: 2683
+  }
+}
+location {
+  id: 12
+  mapping_id: 1
+  address: 17046105
+  line {
+    function_id: 11
+    line: 2866
+  }
+}
+location {
+  id: 13
+  mapping_id: 1
+  address: 17046739
+  line {
+    function_id: 12
+    line: 2894
+  }
+}
+location {
+  id: 14
+  mapping_id: 1
+  address: 17227578
+  line {
+    function_id: 13
+    line: 318
+  }
+}
+location {
+  id: 15
+  mapping_id: 1
+  address: 17137655
+  line {
+    function_id: 14
+    line: 284
+  }
+}
+location {
+  id: 16
+  mapping_id: 1
+  address: 17045252
+  line {
+    function_id: 15
+    line: 19
+  }
+  line {
+    function_id: 16
+    line: 2757
+  }
+}
+location {
+  id: 17
+  mapping_id: 1
+  address: 17038697
+  line {
+    function_id: 9
+    line: 2289
+  }
+}
+location {
+  id: 18
+  mapping_id: 1
+  address: 17045596
+  line {
+    function_id: 17
+    line: 2851
+  }
+}
+location {
+  id: 19
+  mapping_id: 1
+  address: 17137496
+  line {
+    function_id: 18
+    line: 270
+  }
+}
+location {
+  id: 20
+  mapping_id: 1
+  address: 16993252
+  line {
+    function_id: 19
+    line: 30
+  }
+  line {
+    function_id: 20
+    line: 89
+  }
+}
+location {
+  id: 21
+  mapping_id: 1
+  address: 17042487
+  line {
+    function_id: 21
+    line: 2521
+  }
+}
+location {
+  id: 22
+  mapping_id: 1
+  address: 17142761
+  line {
+    function_id: 22
+    line: 480
+  }
+}
+location {
+  id: 23
+  mapping_id: 1
+  address: 17139524
+  line {
+    function_id: 23
+    line: 529
+  }
+  line {
+    function_id: 24
+    line: 197
+  }
+}
+location {
+  id: 24
+  mapping_id: 1
+  address: 17045633
+  line {
+    function_id: 17
+    line: 2840
+  }
+}
+location {
+  id: 25
+  mapping_id: 1
+  address: 17137424
+  line {
+    function_id: 25
+    line: 263
+  }
+}
+location {
+  id: 26
+  mapping_id: 1
+  address: 17063084
+  line {
+    function_id: 26
+    line: 4660
+  }
+}
+location {
+  id: 27
+  mapping_id: 1
+  address: 17029287
+  line {
+    function_id: 27
+    line: 1172
+  }
+}
+location {
+  id: 28
+  mapping_id: 1
+  address: 17029061
+  line {
+    function_id: 28
+    line: 1137
+  }
+}
+function {
+  id: 1
+  name: 5
+  system_name: 5
+  filename: 6
+}
+function {
+  id: 2
+  name: 7
+  system_name: 7
+  filename: 6
+}
+function {
+  id: 3
+  name: 8
+  system_name: 8
+  filename: 9
+}
+function {
+  id: 4
+  name: 10
+  system_name: 10
+  filename: 11
+}
+function {
+  id: 5
+  name: 12
+  system_name: 12
+  filename: 13
+}
+function {
+  id: 6
+  name: 14
+  system_name: 14
+  filename: 15
+}
+function {
+  id: 7
+  name: 16
+  system_name: 16
+  filename: 17
+}
+function {
+  id: 8
+  name: 18
+  system_name: 18
+  filename: 19
+}
+function {
+  id: 9
+  name: 20
+  system_name: 20
+  filename: 19
+}
+function {
+  id: 10
+  name: 21
+  system_name: 21
+  filename: 19
+}
+function {
+  id: 11
+  name: 22
+  system_name: 22
+  filename: 19
+}
+function {
+  id: 12
+  name: 23
+  system_name: 23
+  filename: 19
+}
+function {
+  id: 13
+  name: 24
+  system_name: 24
+  filename: 25
+}
+function {
+  id: 14
+  name: 26
+  system_name: 26
+  filename: 13
+}
+function {
+  id: 15
+  name: 27
+  system_name: 27
+  filename: 28
+}
+function {
+  id: 16
+  name: 29
+  system_name: 29
+  filename: 19
+}
+function {
+  id: 17
+  name: 30
+  system_name: 30
+  filename: 19
+}
+function {
+  id: 18
+  name: 31
+  system_name: 31
+  filename: 13
+}
+function {
+  id: 19
+  name: 32
+  system_name: 32
+  filename: 28
+}
+function {
+  id: 20
+  name: 33
+  system_name: 33
+  filename: 34
+}
+function {
+  id: 21
+  name: 35
+  system_name: 35
+  filename: 19
+}
+function {
+  id: 22
+  name: 36
+  system_name: 36
+  filename: 37
+}
+function {
+  id: 23
+  name: 38
+  system_name: 38
+  filename: 37
+}
+function {
+  id: 24
+  name: 39
+  system_name: 39
+  filename: 37
+}
+function {
+  id: 25
+  name: 40
+  system_name: 40
+  filename: 13
+}
+function {
+  id: 26
+  name: 41
+  system_name: 41
+  filename: 19
+}
+function {
+  id: 27
+  name: 42
+  system_name: 42
+  filename: 19
+}
+function {
+  id: 28
+  name: 43
+  system_name: 43
+  filename: 19
+}
+string_table: ""
+string_table: "samples"
+string_table: "count"
+string_table: "cpu"
+string_table: "nanoseconds"
+string_table: "main.computeSum"
+string_table: "/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/cpu/main.go"
+string_table: "main.run.func2"
+string_table: "golang.org/x/sync/errgroup.(*Group).Go.func1"
+string_table: "/Users/felix.geisendoerfer/go/pkg/mod/golang.org/x/sync@v0.0.0-20201207232520-09787c993a3a/errgroup/errgroup.go"
+string_table: "runtime.asyncPreempt"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/preempt_amd64.s"
+string_table: "runtime.pthread_cond_wait"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/sys_darwin.go"
+string_table: "runtime.semasleep"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/os_darwin.go"
+string_table: "runtime.notesleep"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/lock_sema.go"
+string_table: "runtime.stopm"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go"
+string_table: "runtime.findrunnable"
+string_table: "runtime.schedule"
+string_table: "runtime.goschedImpl"
+string_table: "runtime.gopreempt_m"
+string_table: "runtime.mcall"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/asm_amd64.s"
+string_table: "runtime.nanotime1"
+string_table: "runtime.nanotime"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time_nofake.go"
+string_table: "runtime.checkTimers"
+string_table: "runtime.park_m"
+string_table: "runtime.write1"
+string_table: "runtime.write"
+string_table: "runtime.netpollBreak"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/netpoll_kqueue.go"
+string_table: "runtime.wakeNetPoller"
+string_table: "runtime.modtimer"
+string_table: "/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go"
+string_table: "runtime.resettimer"
+string_table: "runtime.resetForSleep"
+string_table: "runtime.usleep"
+string_table: "runtime.sysmon"
+string_table: "runtime.mstart1"
+string_table: "runtime.mstart"
+time_nanos: 1610122232116825000
+duration_nanos: 3135113726
+period_type {
+  type: 3
+  unit: 4
+}
+period: 10000000

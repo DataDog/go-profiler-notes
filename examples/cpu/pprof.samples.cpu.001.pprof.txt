@@ -1,0 +1,47 @@
+PeriodType: cpu nanoseconds
+Period: 10000000
+Time: 2021-01-08 17:10:32.116825 +0100 CET
+Duration: 3.13
+Samples:
+samples/count cpu/nanoseconds
+         19  190000000: 1 2 3 
+          5   50000000: 4 5 2 3 
+          1   10000000: 6 7 8 9 10 11 12 13 14 
+          1   10000000: 15 16 17 11 18 14 
+          2   20000000: 6 7 8 9 10 11 18 14 
+          7   70000000: 19 20 21 22 23 24 14 
+          3   30000000: 25 26 27 28 
+Locations
+     1: 0x1372f7f M=1 main.computeSum /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/cpu/main.go:39 s=0
+     2: 0x13730f2 M=1 main.run.func2 /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/cpu/main.go:31 s=0
+     3: 0x1372cf8 M=1 golang.org/x/sync/errgroup.(*Group).Go.func1 /Users/felix.geisendoerfer/go/pkg/mod/golang.org/x/sync@v0.0.0-20201207232520-09787c993a3a/errgroup/errgroup.go:57 s=0
+     4: 0x10711c0 M=1 runtime.asyncPreempt /usr/local/Cellar/go/1.15.6/libexec/src/runtime/preempt_amd64.s:7 s=0
+     5: 0x1372f7e M=1 main.computeSum /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/cpu/main.go:37 s=0
+     6: 0x1058598 M=1 runtime.pthread_cond_wait /usr/local/Cellar/go/1.15.6/libexec/src/runtime/sys_darwin.go:414 s=0
+     7: 0x10351ac M=1 runtime.semasleep /usr/local/Cellar/go/1.15.6/libexec/src/runtime/os_darwin.go:63 s=0
+     8: 0x100de06 M=1 runtime.notesleep /usr/local/Cellar/go/1.15.6/libexec/src/runtime/lock_sema.go:181 s=0
+     9: 0x103ee64 M=1 runtime.stopm /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:1924 s=0
+    10: 0x104063e M=1 runtime.findrunnable /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2485 s=0
+    11: 0x10412b6 M=1 runtime.schedule /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2683 s=0
+    12: 0x1041a59 M=1 runtime.goschedImpl /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2866 s=0
+    13: 0x1041cd3 M=1 runtime.gopreempt_m /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2894 s=0
+    14: 0x106df3a M=1 runtime.mcall /usr/local/Cellar/go/1.15.6/libexec/src/runtime/asm_amd64.s:318 s=0
+    15: 0x1057ff7 M=1 runtime.nanotime1 /usr/local/Cellar/go/1.15.6/libexec/src/runtime/sys_darwin.go:284 s=0
+    16: 0x1041704 M=1 runtime.nanotime /usr/local/Cellar/go/1.15.6/libexec/src/runtime/time_nofake.go:19 s=0
+             runtime.checkTimers /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2757 s=0
+    17: 0x103fd69 M=1 runtime.findrunnable /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2289 s=0
+    18: 0x104185c M=1 runtime.park_m /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2851 s=0
+    19: 0x1057f58 M=1 runtime.write1 /usr/local/Cellar/go/1.15.6/libexec/src/runtime/sys_darwin.go:270 s=0
+    20: 0x1034be4 M=1 runtime.write /usr/local/Cellar/go/1.15.6/libexec/src/runtime/time_nofake.go:30 s=0
+             runtime.netpollBreak /usr/local/Cellar/go/1.15.6/libexec/src/runtime/netpoll_kqueue.go:89 s=0
+    21: 0x1040c37 M=1 runtime.wakeNetPoller /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2521 s=0
+    22: 0x10593e9 M=1 runtime.modtimer /usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:480 s=0
+    23: 0x1058744 M=1 runtime.resettimer /usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:529 s=0
+             runtime.resetForSleep /usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:197 s=0
+    24: 0x1041881 M=1 runtime.park_m /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2840 s=0
+    25: 0x1057f10 M=1 runtime.usleep /usr/local/Cellar/go/1.15.6/libexec/src/runtime/sys_darwin.go:263 s=0
+    26: 0x1045cac M=1 runtime.sysmon /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:4660 s=0
+    27: 0x103d8a7 M=1 runtime.mstart1 /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:1172 s=0
+    28: 0x103d7c5 M=1 runtime.mstart /usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:1137 s=0
+Mappings
+1: 0x0/0x0/0x0   [FN]
