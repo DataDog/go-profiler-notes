@@ -28,25 +28,29 @@ func run() error {
 		return http.ListenAndServe(addr, nil)
 	})
 
-	g.Go(func() error { return computeSum(1000000, 10*time.Millisecond) })
+	g.Go(func() error { return computeSleepLoop(1000000, 10*time.Millisecond) })
 
 	return g.Wait()
 }
 
-func computeSum(to int, sleep time.Duration) error {
+func computeSleepLoop(n int, sleep time.Duration) error {
 	for {
-		var sum int64
-		for i := 0; i < to; i++ {
-			sum += int64(i) / 2
-			sum += int64(i) / 3
-			sum += int64(i) / 4
-			sum += int64(i) / 5
-			sum += int64(i) / 6
-			sum += int64(i) / 7
-			sum += int64(i) / 8
-		}
+		compute(n)
 		time.Sleep(sleep)
 	}
-
 	return nil
+}
+
+func compute(n int) int64 {
+	var sum int64
+	for i := 0; i < n; i++ {
+		sum += int64(i) / 2
+		sum += int64(i) / 3
+		sum += int64(i) / 4
+		sum += int64(i) / 5
+		sum += int64(i) / 6
+		sum += int64(i) / 7
+		sum += int64(i) / 8
+	}
+	return sum
 }
