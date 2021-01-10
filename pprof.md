@@ -18,7 +18,9 @@ A pprof file contains a list of **stack traces** called *samples* that have one 
 
 The profile also includes the **time** (in UTC) that the profile was recorded, and the **duration** of the recording.
 
-Additionally the format allows for **drop/keep** regexes for excluding/including certain stack traces, but it's not clear to me if Go is using those at all. There is also room for a list of **comments**, as well as describing the **periodic** interval at which samples were taken.
+Additionally the format allows for **drop/keep** regexes for excluding/including certain stack traces, but they're [not used](https://github.com/golang/go/blob/go1.15.6/src/runtime/pprof/proto.go#L375-L376) by Go. There is also room for a list of **comments** ([not used](https://github.com/golang/go/search?q=tagProfile_Comment) either), as well as describing the **periodic** interval at which samples were taken.
+
+The code for generating pprof output in Go can be found in: [runtime/pprof/proto.go](https://github.com/golang/go/blob/go1.15.6/src/runtime/pprof/proto.go).
 
 ### Decoding
 
