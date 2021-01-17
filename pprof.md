@@ -151,3 +151,7 @@ The output above is truncated also, [pprof.samples.cpu.001.protoc.txt](./example
 - Explain why pprof can be given a path to the binary the profile belongs to.
 - Get into more details about line numbers / addresses.
 - Talk about mappings and when a Go binary might have more than one
+
+## Disclaimer
+
+I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. This document may not reflect the views of my employer, but they were kind enough to let me publish it : ).

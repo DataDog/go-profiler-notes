@@ -75,3 +75,7 @@ The various ways one can record CPU profiles in Go are listed below.
 - bias
 - performance overhead
 - Discuss [Proposal: hardware performance counters for CPU profiling.](https://go.googlesource.com/proposal/+/refs/changes/08/219508/2/design/36821-perf-counter-pprof.md)
+
+## Disclaimer
+
+I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. This document may not reflect the views of my employer, but they were kind enough to let me publish it : ).
