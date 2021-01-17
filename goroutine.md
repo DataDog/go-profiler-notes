@@ -197,7 +197,7 @@ Below is a truncated example of the returned output, see [2.runtime.goroutinepro
       20628306,
       17018153,
       17235329,
-      // ...
+      ...
     ]
   },
   {
@@ -206,10 +206,10 @@ Below is a truncated example of the returned output, see [2.runtime.goroutinepro
       17222943,
       20628554,
       17235329,
-      // ...
+      ...
     ]
   },
-  // ...
+  ...
 ]
 ```
 
