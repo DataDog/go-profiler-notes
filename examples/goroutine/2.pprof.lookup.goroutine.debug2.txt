@@ -1,0 +1,133 @@
+goroutine 1 [running]:
+runtime/pprof.writeGoroutineStacks(0x14e5940, 0xc0000abc50, 0x101b8a5, 0xc000333d20)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/pprof/pprof.go:693 +0x9f
+runtime/pprof.writeGoroutine(0x14e5940, 0xc0000abc50, 0x2, 0xc000333dc0, 0x10ee5c8)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/pprof/pprof.go:682 +0x45
+runtime/pprof.(*Profile).WriteTo(0x17179e0, 0x14e5940, 0xc0000abc50, 0x2, 0xc00002c210, 0xc0000ac4e0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/pprof/pprof.go:331 +0x3f2
+main.glob..func5(0x14e5940, 0xc0000abc50, 0xc000333eb0, 0x2)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:67 +0x65
+main.writeProfiles(0x2, 0xc0000c4008, 0x1466424)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:106 +0x187
+main.main()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:152 +0x3d2
+
+goroutine 22 [sleep, 1 minutes]:
+time.Sleep(0x3b9aca00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.shortSleepLoop()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:165 +0x2a
+created by main.indirectShortSleepLoop2
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:185 +0x35
+
+goroutine 3 [IO wait, 1 minutes]:
+internal/poll.runtime_pollWait(0x1e91e88, 0x72, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/netpoll.go:222 +0x55
+internal/poll.(*pollDesc).wait(0xc00019e018, 0x72, 0x0, 0x0, 0x1465786)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_poll_runtime.go:87 +0x45
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_poll_runtime.go:92
+internal/poll.(*FD).Accept(0xc00019e000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_unix.go:394 +0x1fc
+net.(*netFD).accept(0xc00019e000, 0x7d667d63cbbded3e, 0x1789ccbbded3e, 0x100000001)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/fd_unix.go:172 +0x45
+net.(*TCPListener).accept(0xc000188060, 0x60006709, 0xc000196da8, 0x109abe6)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/tcpsock_posix.go:139 +0x32
+net.(*TCPListener).Accept(0xc000188060, 0xc000196df8, 0x18, 0xc000001200, 0x12e9eec)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/tcpsock.go:261 +0x65
+net/http.(*Server).Serve(0xc00019c000, 0x14ec6e0, 0xc000188060, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/server.go:2937 +0x266
+net/http.(*Server).ListenAndServe(0xc00019c000, 0xc00019c000, 0x1475536)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/server.go:2866 +0xb7
+net/http.ListenAndServe(...)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/server.go:3120
+main.main.func1(0xc000032120)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:123 +0x126
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:121 +0xc5
+
+goroutine 4 [sleep, 1 minutes]:
+time.Sleep(0x3b9aca00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.shortSleepLoop()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:165 +0x2a
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:130 +0x195
+
+goroutine 5 [sleep, 1 minutes]:
+time.Sleep(0x34630b8a000)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.sleepLoop(0x34630b8a000)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:171 +0x2b
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:131 +0x1bc
+
+goroutine 6 [chan receive, 1 minutes]:
+main.chanReceiveForever()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:177 +0x4d
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/goroutine/main.go:132 +0x1d4
+
+goroutine 24 [select, 1 minutes]:
+net/http.(*persistConn).writeLoop(0xc0000cea20)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/transport.go:2340 +0x11c
+created by net/http.(*Transport).dialConn
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/transport.go:1709 +0xcdc
+
+goroutine 23 [IO wait, 1 minutes]:
+internal/poll.runtime_pollWait(0x1e91da0, 0x72, 0x14e6ca0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/netpoll.go:222 +0x55
+internal/poll.(*pollDesc).wait(0xc00010e198, 0x72, 0x14e6c00, 0x16db878, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_poll_runtime.go:87 +0x45
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_poll_runtime.go:92
+internal/poll.(*FD).Read(0xc00010e180, 0xc000256000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_unix.go:159 +0x1a5
+net.(*netFD).Read(0xc00010e180, 0xc000256000, 0x1000, 0x1000, 0x103b1dc, 0xc000199b58, 0x10680e0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/fd_posix.go:55 +0x4f
+net.(*conn).Read(0xc000010008, 0xc000256000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/net.go:182 +0x8e
+net/http.(*persistConn).Read(0xc0000cea20, 0xc000256000, 0x1000, 0x1000, 0xc00009e300, 0xc000199c58, 0x10074b5)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/transport.go:1887 +0x77
+bufio.(*Reader).fill(0xc0001801e0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/bufio/bufio.go:101 +0x105
+bufio.(*Reader).Peek(0xc0001801e0, 0x1, 0x0, 0x0, 0x1, 0x0, 0xc0001d0060)
+	/usr/local/Cellar/go/1.15.6/libexec/src/bufio/bufio.go:139 +0x4f
+net/http.(*persistConn).readLoop(0xc0000cea20)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/transport.go:2040 +0x1a8
+created by net/http.(*Transport).dialConn
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/transport.go:1708 +0xcb7
+
+goroutine 41 [IO wait, 1 minutes]:
+internal/poll.runtime_pollWait(0x1e91cb8, 0x72, 0x14e6ca0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/netpoll.go:222 +0x55
+internal/poll.(*pollDesc).wait(0xc00019e098, 0x72, 0x14e6c00, 0x16db878, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_poll_runtime.go:87 +0x45
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_poll_runtime.go:92
+internal/poll.(*FD).Read(0xc00019e080, 0xc000326000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/internal/poll/fd_unix.go:159 +0x1a5
+net.(*netFD).Read(0xc00019e080, 0xc000326000, 0x1000, 0x1000, 0x203000, 0x203000, 0x203000)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/fd_posix.go:55 +0x4f
+net.(*conn).Read(0xc000186028, 0xc000326000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/net.go:182 +0x8e
+net/http.(*connReader).Read(0xc00007c300, 0xc000326000, 0x1000, 0x1000, 0x100000006, 0x10, 0x1819408)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/server.go:798 +0x1ad
+bufio.(*Reader).fill(0xc000290060)
+	/usr/local/Cellar/go/1.15.6/libexec/src/bufio/bufio.go:101 +0x105
+bufio.(*Reader).ReadSlice(0xc000290060, 0xa, 0x1819408, 0xc000337988, 0x100f6d0, 0xc000110000, 0x100)
+	/usr/local/Cellar/go/1.15.6/libexec/src/bufio/bufio.go:360 +0x3d
+bufio.(*Reader).ReadLine(0xc000290060, 0xc000110000, 0x1079694, 0xc0001a4000, 0x0, 0x1010038, 0x30)
+	/usr/local/Cellar/go/1.15.6/libexec/src/bufio/bufio.go:389 +0x34
+net/textproto.(*Reader).readLineSlice(0xc000182300, 0xc000110000, 0x10d7c4d, 0xc00019e080, 0x1068000, 0xc000282900)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/textproto/reader.go:58 +0x6c
+net/textproto.(*Reader).ReadLine(...)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/textproto/reader.go:39
+net/http.readRequest(0xc000290060, 0x0, 0xc000110000, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/request.go:1012 +0xaa
+net/http.(*conn).readRequest(0xc0000c6320, 0x14ed4a0, 0xc000322000, 0x0, 0x0, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/server.go:984 +0x19a
+net/http.(*conn).serve(0xc0000c6320, 0x14ed4a0, 0xc000322000)
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/server.go:1851 +0x705
+created by net/http.(*Server).Serve
+	/usr/local/Cellar/go/1.15.6/libexec/src/net/http/server.go:2969 +0x36c
