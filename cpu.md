@@ -1,8 +1,6 @@
 🚧 This note is still work in progress, please come back later! 🚧
 
-# Go's CPU profiler
-
-[TOC]
+# CPU Profiling in Go
 
 ## How it works
 

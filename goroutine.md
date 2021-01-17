@@ -1,6 +1,6 @@
 This document was last updated for `go1.15.6` but probably still applies to older/newer versions for the most parts.
 
-# Go's Goroutine Profiler
+# Goroutine Profiling in Go
 
 Go has various APIs to provide users with a list of **active** goroutines, their current stack trace, as well as various other properties. Some APIs expose this information as statistical summaries, while other APIs provide information for each individual goroutine.
 

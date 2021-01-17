@@ -3,15 +3,15 @@
 I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. To make sure that I know what I'm talking about, I'm planning to do an in-depth study of the existing profilers and how they work. I'll try to summarize what I learned in this repository as it might be useful to others.
 
 - [pprof tool & format](./pprof.md): Describes the pprof tool and it's binary data format.
+- [Goroutine Profiling](./goroutine.md)
 
 ## Todo
 
-- CPU Profiler
-- Heap Profiler
-- Mutex Profiler
-- Goroutine Profiler
-- Block Profiler
-- Wallclock Profiler (fgprof)
+- CPU Profiling
+- Heap Profiling
+- Mutex Profiling
+- Block Profiling
+- Wallclock Profiling (fgprof)
 
 ## External Links
 

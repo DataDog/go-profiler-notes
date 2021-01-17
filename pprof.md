@@ -150,3 +150,4 @@ The output above is truncated also, [pprof.samples.cpu.001.protoc.txt](./example
 - Write more about using `go tool pprof` itself.
 - Explain why pprof can be given a path to the binary the profile belongs to.
 - Get into more details about line numbers / addresses.
+- Talk about mappings and when a Go binary might have more than one

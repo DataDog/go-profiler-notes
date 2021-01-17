@@ -12,6 +12,8 @@ A `batch` has a `start` and an `end` time as well as a slice of `profiles`. Each
 
 ## Payload Format
 
+TODO: This is outdated, needs updating [based on this PR](https://github.com/DataDog/dd-trace-go/pull/781).
+
 The payload uses `multipart/form-data` encoding and includes the following form fields for every `batch` that is being uploaded.
 
 - `format`: Always `pprof`
