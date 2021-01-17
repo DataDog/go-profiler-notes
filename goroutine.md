@@ -216,3 +216,7 @@ Below is a truncated example of the returned output, see [2.runtime.goroutinepro
 ### [`net/http/pprof`](https://golang.org/pkg/net/http/pprof/)
 
 This package exposes the [`pprof.Lookup("goroutine")`](https://golang.org/pkg/runtime/pprof/#Lookup) profiles described above via HTTP endpoints. The output is identical.
+
+## Disclaimer
+
+I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. This document may not reflect the views of my employer, but they were kind enough to let me publish it : ).
