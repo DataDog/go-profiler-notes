@@ -98,8 +98,8 @@ internal/poll.(*FD).Accept(0xc00019e000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
 This profiling method is invoked the same way as `pprof.Lookup(debug=2)`, but produces very different data:
 
 - Instead of listing individual goroutines, goroutines with the same stack/labels are listed once along with their count.
-- pprof labels are included (`debug=2` does not include them).
-- Most other goroutine properties from debug=2 are not included.
+- pprof labels are included, `debug=2` does not include them.
+- Most other goroutine properties from `debug=2` are not included.
 - The output format is also text based, but looks very different than `debug=2`.
 
 Below is a truncated example of the returned output, see [2.pprof.lookup.goroutine.debug1.txt](./examples/goroutine/2.pprof.lookup.goroutine.debug1.txt) for a full example.
