@@ -2,18 +2,20 @@ This document was last updated for `go1.15.6` but probably still applies to olde
 
 # Goroutine Profiling in Go
 
-Go has various APIs to provide users with a list of **active** goroutines, their current stack trace, as well as various other properties. Some APIs expose this information as statistical summaries, while other APIs provide information for each individual goroutine.
+The Go runtime keeps track of all goroutines in a simple slice called [allgs](https://github.com/golang/go/blob/3a778ff50f7091b8a64875c8ed95bfaacf3d334c/src/runtime/proc.go#L500). It contains both active and dead goroutines. The latter are kept around for reuse when new goroutines are spawned.
 
-Despite the differences between the APIs, the [common](https://github.com/golang/go/blob/9b955d2d3fcff6a5bc8bce7bafdc4c634a28e95b/src/runtime/mprof.go#L729) [definition](https://github.com/golang/go/blob/9b955d2d3fcff6a5bc8bce7bafdc4c634a28e95b/src/runtime/traceback.go#L931) of an **active** goroutine seems to be:
+Go has various APIs to inspect the active goroutines in `allgs` along with their current stack trace, as well as various other properties. Some APIs expose this information as statistical summaries, while other APIs provide information for each individual goroutine.
 
-- It's not [`dead`](https://github.com/golang/go/blob/go1.15.6/src/runtime/runtime2.go#L65-L71) (just exited or is being reinitialized).
+Despite the differences between the APIs, the [common](https://github.com/golang/go/blob/9b955d2d3fcff6a5bc8bce7bafdc4c634a28e95b/src/runtime/mprof.go#L729) [definition](https://github.com/golang/go/blob/9b955d2d3fcff6a5bc8bce7bafdc4c634a28e95b/src/runtime/traceback.go#L931) of an "active" goroutine seems to be:
+
+- It's not [`dead`](https://github.com/golang/go/blob/go1.15.6/src/runtime/runtime2.go#L65-L71)
 - It's not a [system goroutine](https://github.com/golang/go/blob/9b955d2d3fcff6a5bc8bce7bafdc4c634a28e95b/src/runtime/traceback.go#L1013-L1021) nor finalizer goroutine.
 
-In other words, goroutines that are running, waiting on locks, i/o, scheduling, etc. are all considered to be active, even so one might naively not think of them as such.
+In other words, goroutines that are running as well as those waiting on i/o, locks, channels, scheduling, etc. are all considered to be "active", even so one might naively not think of the latter ones as such.
 
 ## Performance Impact
 
-All Goroutine profiling available in Go requires an `O(N)` **stop-the-world** phase where `N` is the number of allocated goroutines. A [naive benchmark](https://github.com/felixge/fgprof/blob/fe01e87ceec08ea5024e8168f88468af8f818b62/fgprof_test.go#L35-L78) [indicates](https://github.com/felixge/fgprof/blob/master/BenchmarkProfilerGoroutines.txt) that the world is stopped for ~1µs per goroutine when using the [runtime.GoroutineProfile()](https://golang.org/pkg/runtime/#GoroutineProfile) API. But this number is likely to fluctuate in response to other factors such as the average stack depth of the program.
+All Goroutine profiling available in Go requires an `O(N)` **stop-the-world** phase where `N` is the number of allocated goroutines. A [naive benchmark](https://github.com/felixge/fgprof/blob/fe01e87ceec08ea5024e8168f88468af8f818b62/fgprof_test.go#L35-L78) [indicates](https://github.com/felixge/fgprof/blob/master/BenchmarkProfilerGoroutines.txt) that the world is stopped for ~1µs per goroutine when using the [runtime.GoroutineProfile()](https://golang.org/pkg/runtime/#GoroutineProfile) API. But this number is likely to fluctuate in response to factors such as the average stack depth of the program, the number of dead goroutines, etc..
 
 As a rule of thumb, applications that are extremely latency sensitive and make use of thousands of active goroutines might want to be a little careful with goroutine profiling in production. That being said, large number of goroutines, and perhaps even Go itself, might not be good idea for such applications to begin with.
 
