@@ -6,13 +6,14 @@ import (
 )
 
 type Record struct {
-	Workload         string
-	Ops              int
-	Goroutines       int
-	Depth            int
 	Blockprofilerate int
-	Run              int
+	Bufsize          int
+	Depth            int
 	Duration         time.Duration
+	Goroutines       int
+	Ops              int
+	Run              int
+	Workload         string
 }
 
 type Column struct {
@@ -32,6 +33,9 @@ var Columns = []Column{
 	}},
 	{"depth", func(r *Record) (string, error) {
 		return fmt.Sprintf("%d", r.Depth), nil
+	}},
+	{"bufsize", func(r *Record) (string, error) {
+		return fmt.Sprintf("%d", r.Bufsize), nil
 	}},
 	{"blockprofilerate", func(r *Record) (string, error) {
 		return fmt.Sprintf("%d", r.Blockprofilerate), nil

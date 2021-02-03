@@ -2,7 +2,7 @@
 
 This page is documenting the benchmark methodology used to analyze the performance overhead of the various go profilers. The results are discussed in the documents for each individual profiler.
 
-Benchmarking is done by invoking the Go program included in this directory. You can look at [run.sh](./run.sh) to see the current arguments that are being used, but here is an example for block profiling with various profiling rates:
+Benchmarking is done by invoking the Go program included in this directory. You can look at [run.sh](./run.sh) to see the current arguments that are being used, but here is an example for block profiling with two workloads and various profiling rates:
 
 ```
 go run . \
@@ -21,3 +21,9 @@ Workloads are defined in the [workloads.go](./workloads.go) file. For now the wo
 The CSV files are visualized using the [analysis.ipynb](./analysis.ipynb) notebook that's included in this directory.
 
 For now the data is only collected from my local MacBook Pro machine (using docker for mac), but more realistic environments will be included in the future. But it's probably a good setup for finding pathological scenarios : ).
+
+## Disclaimers
+
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go (you should check it out) and they generously allowed me to do all this research and publish it.
+
+The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!

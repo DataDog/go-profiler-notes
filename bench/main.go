@@ -32,11 +32,12 @@ func run() error {
 func leader() error {
 	var (
 		blockprofilerates = flagIntSlice("blockprofilerates", []int{0, 1, 10, 100, 1000, 10000, 100000, 1000000}, "The runtime.SetBlockProfileRate() values to benchmark.")
-		workloads         = flagStringSlice("workloads", []string{"mutex", "chan"}, "The workloads to benchmark.")
-		ops               = flag.Int("ops", 1000, "The number of operations to perform for each workload.")
-		goroutines        = flagIntSlice("goroutines", []int{runtime.NumCPU()}, "The number of goroutine values to use for each workloads.")
-		runs              = flag.Int("runs", 3, "The number of times to repeat the same benchmark to understand variance.")
+		bufsizes          = flagIntSlice("bufsizes", []int{0, 64}, "The buffer sizes to use for channel operations (not applicable to all workloads).")
 		depths            = flagIntSlice("depths", []int{2, 4, 8, 16, 32}, "The different frame depths values to use for each workload.")
+		goroutines        = flagIntSlice("goroutines", []int{runtime.NumCPU()}, "The number of goroutine values to use for each workloads.")
+		ops               = flag.Int("ops", 1000, "The number of operations to perform for each workload.")
+		runs              = flag.Int("runs", 3, "The number of times to repeat the same benchmark to understand variance.")
+		workloads         = flagStringSlice("workloads", []string{"mutex", "chan"}, "The workloads to benchmark.")
 	)
 	flag.Parse()
 
@@ -48,26 +49,29 @@ func leader() error {
 		for _, goroutine := range *goroutines {
 			for _, blockprofilerate := range *blockprofilerates {
 				for _, depth := range *depths {
-					for run := 1; run <= *runs; run++ {
-						cmd := exec.Command(os.Args[0],
-							"-run", fmt.Sprintf("%d", run),
-							"-blockprofilerate", fmt.Sprintf("%d", blockprofilerate),
-							"-ops", fmt.Sprintf("%d", *ops),
-							"-goroutines", fmt.Sprintf("%d", goroutine),
-							"-depth", fmt.Sprintf("%d", depth),
-							"-workload", workload,
-						)
+					for _, bufsize := range *bufsizes {
+						for run := 1; run <= *runs; run++ {
+							cmd := exec.Command(os.Args[0],
+								"-run", fmt.Sprintf("%d", run),
+								"-blockprofilerate", fmt.Sprintf("%d", blockprofilerate),
+								"-ops", fmt.Sprintf("%d", *ops),
+								"-goroutines", fmt.Sprintf("%d", goroutine),
+								"-depth", fmt.Sprintf("%d", depth),
+								"-bufsize", fmt.Sprintf("%d", bufsize),
+								"-workload", workload,
+							)
 
-						buf := &bytes.Buffer{}
-						cmd.Stdout = buf
-						cmd.Stderr = os.Stderr
-						cmd.Env = append(cmd.Env, "WORKER=yeah")
+							buf := &bytes.Buffer{}
+							cmd.Stdout = buf
+							cmd.Stderr = os.Stderr
+							cmd.Env = append(cmd.Env, "WORKER=yeah")
 
-						if err := cmd.Run(); err != nil {
-							return err
+							if err := cmd.Run(); err != nil {
+								return err
+							}
+
+							buf.WriteTo(os.Stdout)
 						}
-
-						buf.WriteTo(os.Stdout)
 					}
 				}
 			}
@@ -79,13 +83,14 @@ func leader() error {
 
 func worker() error {
 	var (
-		run              = flag.Int("run", 1, "The number of run. Has no impact on the benchmark, but gets included in the csv output line.")
 		blockprofilerate = flag.Int("blockprofilerate", 1, "The block profile rate to use.")
-		workload         = flag.String("workload", "mutex", "The workload to simulate.")
-		out              = flag.String("blockprofile", "", "Path to a file for writing the block profile.")
+		bufsize          = flag.Int("bufsize", 0, "The buffer size to use for channel operations (not applicable to all workloads).")
 		depth            = flag.Int("depth", 16, "The stack depth at which to perform blocking events.")
-		ops              = flag.Int("ops", 100000, "The number of operations to perform.")
 		goroutines       = flag.Int("goroutines", runtime.NumCPU(), "The number of goroutines to utilize.")
+		ops              = flag.Int("ops", 100000, "The number of operations to perform.")
+		out              = flag.String("blockprofile", "", "Path to a file for writing the block profile.")
+		run              = flag.Int("run", 1, "The number of run. Has no impact on the benchmark, but gets included in the csv output line.")
+		workload         = flag.String("workload", "mutex", "The workload to simulate.")
 	)
 	flag.Parse()
 
@@ -100,7 +105,7 @@ func worker() error {
 			return err
 		}
 	case "chan":
-		if err := chanWorkload(*goroutines, *ops, *depth); err != nil {
+		if err := chanWorkload(*goroutines, *ops, *depth, *bufsize); err != nil {
 			return err
 		}
 	default:
@@ -121,13 +126,14 @@ func worker() error {
 
 	cw := csv.NewWriter(os.Stdout)
 	record, err := (&Record{
-		Workload:         *workload,
-		Ops:              *ops,
-		Goroutines:       *goroutines,
-		Depth:            *depth,
 		Blockprofilerate: *blockprofilerate,
-		Run:              *run,
+		Bufsize:          *bufsize,
+		Depth:            *depth,
 		Duration:         duration,
+		Goroutines:       *goroutines,
+		Ops:              *ops,
+		Run:              *run,
+		Workload:         *workload,
 	}).MarshalRecord()
 	if err != nil {
 		return err
