@@ -13,7 +13,7 @@ Despite the differences between the APIs, the [common](https://github.com/golang
 
 In other words, goroutines that are running as well as those waiting on i/o, locks, channels, scheduling, etc. are all considered to be "active", even so one might naively not think of the latter ones as such.
 
-## Performance Impact
+## Overhead
 
 All Goroutine profiling available in Go requires an `O(N)` **stop-the-world** phase where `N` is the number of allocated goroutines. A [naive benchmark](https://github.com/felixge/fgprof/blob/fe01e87ceec08ea5024e8168f88468af8f818b62/fgprof_test.go#L35-L78) [indicates](https://github.com/felixge/fgprof/blob/master/BenchmarkProfilerGoroutines.txt) that the world is stopped for ~1µs per goroutine when using the [runtime.GoroutineProfile()](https://golang.org/pkg/runtime/#GoroutineProfile) API. But this number is likely to fluctuate in response to factors such as the average stack depth of the program, the number of dead goroutines, etc..
 
