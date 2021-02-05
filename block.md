@@ -7,12 +7,12 @@ This document was last updated for `go1.15.7` but probably still applies to olde
 The block profile in Go lets you analyze how much time your program spends waiting on the blocking operations listed below:
 
 - [select](https://github.com/golang/go/blob/go1.15.7/src/runtime/select.go#L511)
-- [chan send](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L279) (except sending to a nil chan which blocks forever but is [not tracked](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L163))
-- [chan receive](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L586) (except receiving from a nil chan which blocks forever but is [not tracked](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L466))
+- [chan send](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L279)
+- [chan receive](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L586)
 - [semacquire](https://github.com/golang/go/blob/go1.15.7/src/runtime/sema.go#L150) ( [`Mutex.Lock`](https://golang.org/pkg/sync/#Mutex.Lock), [`RWMutex.RLock`](https://golang.org/pkg/sync/#RWMutex.RLock) , [`RWMutex.Lock`](https://golang.org/pkg/sync/#RWMutex.Lock), [`WaitGroup.Wait`](https://golang.org/pkg/sync/#WaitGroup.Wait))
 - [notifyListWait](https://github.com/golang/go/blob/go1.15.7/src/runtime/sema.go#L515) ( [`Cond.Wait`](https://golang.org/pkg/sync/#Cond.Wait))
 
-Time is only tracked when Go has to suspend the goroutine's execution by parking it into a [waiting](https://github.com/golang/go/blob/go1.15.7/src/runtime/runtime2.go#L51-L59) state. So for example a `Mutex.Lock()` operation will not show up in your profile if the lock can be immediately aquired.
+Time is only tracked when Go has to suspend the goroutine's execution by parking it into a [waiting](https://github.com/golang/go/blob/go1.15.7/src/runtime/runtime2.go#L51-L59) state. So for example a `Mutex.Lock()` operation will not show up in your profile if the lock can be aquired immediately or via a short amount of [spinning](https://en.wikipedia.org/wiki/Spinlock).
 
 The operations above are a subset of the [waiting states](https://github.com/golang/go/blob/go1.15.7/src/runtime/runtime2.go#L996-L1024) used by the Go runtime, i.e. the operations below **will not** show up in a block profile:
 
@@ -21,16 +21,29 @@ The operations above are a subset of the [waiting states](https://github.com/gol
 - Syscalls
 - Internal Locks (e.g. for [stopTheWorld](https://github.com/golang/go/blob/go1.15.7/src/runtime/proc.go#L900))
 - Blocking in [cgo](https://golang.org/cmd/cgo/) calls
+- Events that block forever (e.g. sending/receiving on nil channels)
+
+However, some of the waiting states above above can be analyzed using [Goroutine Profiling](./goroutine.md).
 
 ## Usage
 
-The block profiler is disabled by default. To record all blocking events regardless of their duration, simply call:
+The block profiler is disabled by default. You can enable it by passing a `rate > 0` as shown below.
 
 ```
-runtime.SetBlockProfileRate(1)
+runtime.SetBlockProfileRate(rate)
 ```
 
-You should read the [Accuracy](#accuracy) and [Overhead](#overhead) sections below to figure out if passing `1` as the sampling rate is a good idea for you or not.
+The `rate` impacts the [Accuracy](#accuracy) and [Overhead](#overhead) of the profiler. In the [docs](https://golang.org/pkg/runtime/#SetBlockProfileRate) the rate is described like this:
+
+> SetBlockProfileRate controls the fraction of goroutine blocking events that are reported in the blocking profile. The profiler aims to sample an average of one blocking event per rate nanoseconds spent blocked.
+>
+> To include every blocking event in the profile, pass rate = 1. To turn off profiling entirely, pass rate <= 0.
+
+Personally I struggle to parse the second sentence, and prefer to describe the `rate` (aka `blockprofilerate`) like this instead:
+
+- `rate <= 0` disables the profiler entirely (the default)
+- `rate == 1` tracks every blocking event, regardless of the event `duration`.
+- `rate => 2` sets the sampling rate in `nanoseconds`. Every event with a `duration >= rate` will be tracked. For events with a `duration < rate`, the profiler will [randomly](https://github.com/golang/go/blob/go1.15.7/src/runtime/mprof.go#L408) sample `duration / rate` events. E.g. if you have an event with a duration of `100ns` and your rate is `1000ns`, there is a `10%` chance it will be tracked by the block profiler.
 
 Block durations are aggregated over the lifetime of the program (while the profiling is enabled). To get a [pprof formated](./pprof.md) snapshot of the current stack traces that lead to blocking events and their cumulative time duration, you can call:
 
@@ -44,7 +57,7 @@ Last but not least you can use the [`runtime.BlockProfile`](https://golang.org/p
 
 ## Overhead
 
-**tl;dr:** A blockprofile rate `>= 10000` (10µs) should have negligable impact on production apps, including those suffering from extreme contention.
+**tl;dr:** A `blockprofilerate` >= `10000` (10µs) should have negligable impact on production apps, including those suffering from extreme contention.
 
 ### Implementation Details
 
@@ -83,52 +96,115 @@ The costs of updating the hash map is probably similar to collecting the stack t
 
 ### Benchmarks
 
-Anyway, what does all of this mean in terms of overhead for your application? It means that block profiling is **low overhead**. Unless your application spends literally all of its time parking/unparking goroutines due to contention, you probably won't be able to see a measurable impact even when sampling every block event.
+Anyway, what does all of this mean in terms of overhead for your application? It generally means that block profiling is **low overhead**. Unless your application spends literally all of its time parking and unparking goroutines due to contention, you probably won't be able to see a measurable impact even when sampling every block event.
 
-That being said, the benchmark results below (see [Methodology](./bench/)) should give you an idea of the **theoretical worst case** overhead block profiling could have. The graph `chan(cap=0)` shows that setting `blockprofilerate` from  `1` to `1000` on a workload that consists entirely in sending tiny messages across unbuffered channels decreases throughput significantly. Using a buffered channel as in graph `chan(cap=128)` greatly reduces the problem to the point that it probably won't matter for real applications that don't spend all of their time on channel communication overheads.
+That being said, the benchmark results below (see [Methodology](./bench/)) should give you an idea of the **theoretical worst case** overhead block profiling could have. The graph `chan(cap=0)` shows that setting `blockprofilerate` from  `1` to `1000` on a [workload](./bench/workload_chan.go) that consists entirely in sending tiny messages across unbuffered channels decreases throughput significantly. Using a buffered channel as in graph `chan(cap=128)` greatly reduces the problem to the point that it probably won't matter for real applications that don't spend all of their time on channel communication overheads.
 
-It's also interesting to note that I was unable to see significant overheads for `mutex` based workloads. I believe this is due to the fact that mutexes employe spin locks before parking a goroutine when there is contention. If somebody has a good idea for a workload that exhibits high non-spinning mutex contention in Go, please let me know!
+It's also interesting to note that I was unable to see significant overheads for [`mutex`](.bench/workload_mutex.go) based workloads. I believe this is due to the fact that mutexes employe spin locks before parking a goroutine when there is contention. If somebody has a good idea for a workload that exhibits high non-spinning mutex contention in Go, please let me know!
 
-![block_linux_x86_64](./bench/block_linux_x86_64.png)
+Anyway, please remember that the graphs below show workloads that were specifically designed to trigger the worst block profiling overhead you can imagine. Real applications will usually see no significant overhead, especially when using a `blockprofilerate` >= `10000` (10µs).
 
-### Initialization Costs 
-
-The first call to `runtime.SetBlockProfileRate()` takes `100ms` because it tries to [measure](https://github.com/golang/go/blob/go1.15.7/src/runtime/runtime.go#L22-L47) the speed difference between the wall clock and the [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter) clock. However, recent changes around async preemption have [broken](https://github.com/golang/go/issues/40653#issuecomment-766340860) this code, so the call is taking only `~10ms` right now.
+<img src="./bench/block_linux_x86_64.png" alt="block_linux_x86_64" style="zoom:80%;" />
 
 ### Memory Usage
 
-Block profiling utilizes a shared hash map that takes up 1.4 MiB even when empty. Unless you explicitly [disable heap profiling](https://twitter.com/felixge/status/1355846360562589696) in your application, this map will get allocated regardless of whether you use the block profiler or not.
+Block profiling utilizes a shared hash map that [uses](https://github.com/golang/go/blob/go1.15.7/src/runtime/mprof.go#L207) `1.4 MiB` of memory even when empty. Unless you explicitly [disable heap profiling](https://twitter.com/felixge/status/1355846360562589696) in your application, this map will get allocated regardless of whether you use the block profiler or not.
 
 Addtionally each unique stack trace will take up some additional memory. The `BuckHashSys` field of [`runtime.MemStats`](https://golang.org/pkg/runtime/#MemStats) allows you to inspect this usage at runtime. In the future I might try to provide additional information about this along with real world data.
 
+### Initialization Time
+
+The first call to `runtime.SetBlockProfileRate()` takes `100ms` because it tries to [measure](https://github.com/golang/go/blob/go1.15.7/src/runtime/runtime.go#L22-L47) the speed ratio between the wall clock and the [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter) clock. However, recent changes around async preemption have [broken](https://github.com/golang/go/issues/40653#issuecomment-766340860) this code, so the call is taking only `~10ms` right now.
+
 ## Accuracy
 
-🚧
+### Sampling Bias
 
-- `rate` concept [same as memory profiler](https://codereview.appspot.com/6443115#msg38)? 
-- sampling (should cycles < rate events be multiplied?)
-- multi socket cpus / tsc
+**tl;dr:** Setting your sampling `rate` too high will bias your results towards infrequent long events over frequent short events.
 
-- max stack depth 32
-- spin locks
-- [runtime: problems with rdtsc in VMs moving backward · Issue #8976 · golang/go](https://github.com/golang/go/issues/8976)
-- https://github.com/golang/go/issues/16755#issuecomment-332279965 ?
+As described in the [Usage](#usage) section, the block profiler will sample as follows:
 
-## Relationship with Time
+- Events with `duration >= rate` will be sampled 100%
+- Events with `duration < rate` have a `duration / rate` chance of getting sampled.
 
-🚧
+The [implementation](https://github.com/golang/go/blob/go1.15.7/src/runtime/mprof.go#L408) for this looks like that:
+
+```go
+func blocksampled(cycles int64) bool {
+	rate := int64(atomic.Load64(&blockprofilerate))
+	if rate <= 0 || (rate > cycles && int64(fastrand())%rate > cycles) {
+		return false
+	}
+	return true
+}
+```
+
+This means that if you set your profiling `rate` low enough, you'll get very accurate results. However, if your `rate` is higher than the `duration` of some of the events you are sampling, the sampling process will exhibit a bias favoring infrequent events of higher `duration` over frequent events with lower `duration` even so they may contribute to the same amount of overall block duration in your program.
+
+#### Example 1
+
+A simple example: Let's say your `blockprofilerate` is `100ns` and your application produces the following events:
+
+- `A`: `1` event with a duration of `100ns`.
+- `B`: `10` events with a duration of `10ns` each.
+
+Given this scenario, the `blockprofiler` is guaranteed to catch and accurately report event `A` as `100ns` in the profile. For event `B`  the most likely outcome is that the profiler will capture only a single event (10% of 10 events) and report `B` as `10ns` in the profile. So you might find yourself in a situation where you think event `A` is causing 10x more blocking than event `B`, which is not true.
+
+#### Example 2 & Proposal for Improvement
+
+For an even better intuition about this, consider the [simulated example](./sim/block_sampling.ipynb) below. Here we have a histogram of all durations collected from 3 types of blocking events. As you can see, they all have different mean durations (`1000ns`, `2000ns`, `3000ns`) and they are occurring at different frequencies, with `count(a) > count(b) > count(c)`. What's more difficult to see, is that the cumulative durations of these events are the same, i.e. `sum(a) = sum(b) = sum(c)`.
+
+<img src="./sim/block_sampling_hist.png" style="zoom: 80%;" />
+
+So given that your application might produce events like this, how will they show up in your block profile as you try out different `blockprofilerates`? As you can see below, all is well and fine until a `blockprofilerate` of `1000ns`. Each event shows up with the same total duration in the profile (the red and green dots are hidden below the blue ones, but they are there, trust me). However starting at `1000ns` you see that event `a` starts to fade from our profile and at `2000ns` you'd already think that events `b` and `c` are causing twice as much blocking time as event `a`.
+
+<img src="./sim/block_sampling_biased.png" style="zoom:80%;" />
+
+So what can we do? Do we always need to live in fear of bias when working with block profiles? No! If the [Overhead](#overhead) for your workload allows it, the simplest solution is to use a low enough `blockprofilerate` that allows you to capture most blocking events.
+
+But perhaps there is an even better way. I'm thinking we could correct for the current bias by keeping the same logic of sampling `duration / rate` fraction of events when `duration < rate`. However, when this happens we could simply multiply the sampled duration like this:
+
+```
+duration = duration * (rate/duration)
+```
+
+Doing so could be done with a trivial patch to the go runtime and the picture below shows the results from simulating it. So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to send a patch for it soon. That being said, I'm not trained in statistics, so my naive ideas might be hilariously misguided.
+
+
+
+<img src="./sim/block_sampling_debiased.png" alt="" style="zoom: 80%;" />
+
+### Time Stamp Counter
+
+`amd64` and other platforms use [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter) for implementing the `cputicks()` function. This technique has been historically challenged by problems with frequency scaling and other kinds of CPU power transitions. Modern CPUs should provide invariant TSCs, but at [least some Go users](https://github.com/golang/go/issues/16755#issuecomment-332279965) are reporting issues. I can't tell whether those are due to broken hardware or issues regarding multi-socket systems, but hope to do more research on this in the future.
+
+Please also note the bug description in the [Initialization Time](#initialization-time) section which may impact the accuracy of converting cputicks to wall clock time.
+
+### Stack Depth
+
+The max stack depth for block profiles is [32](https://github.com/golang/go/blob/go1.15.7/src/runtime/mprof.go#L31). Block events occurring at deeper stack depths will still be included in the profile, but the resulting data might be more difficult to work with.
+
+### Spin Locks
+
+As described earlier, contended Go mutexes will first try to [spin](https://en.wikipedia.org/wiki/Spinlock) for a bit before yielding to the scheduler. If the spinning is successful, not block event will be tracked. This presents another subtle bias in the block profiler towards events of longer duration.
+
+🚧 Todo: Research this a bit more
+
+## Relationship with Wall Clock Time
+
+🚧 To be written ...
 
 ## Relationship with Mutex Profiling
 
-🚧
+🚧 To be written ...
 
 ## pprof Output
 
-🚧
+🚧 To be written ...
 
 ## pprof Labels
 
-🚧
+🚧 To be written ...
 
 ## History
 
@@ -136,6 +212,6 @@ Block profiling was [implemented](https://codereview.appspot.com/6443115) by [Dm
 
 ## Disclaimers
 
-I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go (you should check it out) and they generously allowed me to do all this research and publish it.
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out : ).
 
 The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!
