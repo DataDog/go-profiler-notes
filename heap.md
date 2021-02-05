@@ -38,3 +38,9 @@ GODEBUG=gctrace=1 go run <code>
 - The [docs](https://golang.org/pkg/runtime/pprof/#Profile) say I should get some kind of data, even if there is no GC. I can reproduce that, but the data seems to not change?
 
   > If there has been no garbage collection at all, the heap profile reports all known allocations. This exception helps mainly in programs running without garbage collection enabled, usually for debugging purposes.
+
+## Disclaimers
+
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out : ).
+
+The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!

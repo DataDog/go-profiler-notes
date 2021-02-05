@@ -28,3 +28,9 @@ I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on 
 - [Profiling Go programs with pprof](https://jvns.ca/blog/2017/09/24/profiling-go-with-pprof/) by Julia Evans: A nice tour with a focus on heap profiling and the pprof output format. 
 
 Got great links to recommend? Open an issue or PR, I'd happy to add your suggestions : ).
+
+## Disclaimers
+
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go (you should check it out) and they generously allowed me to do all this research and publish it.
+
+The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!

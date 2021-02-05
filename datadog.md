@@ -29,3 +29,9 @@ The payload uses `multipart/form-data` encoding and includes the following form 
 - `data[0..n]`: One file field for each profile. The filename is always `pprof-data`, and the pprof data is compressed (by Go).
 
 TODO: Link to a sample payload file.
+
+## Disclaimers
+
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out : ).
+
+The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!

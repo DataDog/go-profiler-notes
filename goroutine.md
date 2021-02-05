@@ -219,6 +219,12 @@ Below is a truncated example of the returned output, see [2.runtime.goroutinepro
 
 This package exposes the [`pprof.Lookup("goroutine")`](https://golang.org/pkg/runtime/pprof/#Lookup) profiles described above via HTTP endpoints. The output is identical.
 
-## Disclaimer
+## History
 
-I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. This document may not reflect the views of my employer, but they were kind enough to let me publish it : ).
+Goroutine profiling was [implemented](https://codereview.appspot.com/5687076/) by [Russ Cox](https://github.com/rsc) and first appeared in the [weekly.2012-02-22](https://golang.org/doc/devel/weekly.html#2012-02-22) release prior to go1.
+
+## Disclaimers
+
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out : ).
+
+The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!
