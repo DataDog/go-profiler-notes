@@ -1,0 +1,116 @@
+$ go run examples/runtime-stack/main.go
+sleeping for 1m10s before showing stack traces
+1m10s has passed, dumping all stacksgoroutine 1 [running]:
+main.main()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:26 +0x228
+
+goroutine 18 [sleep, 1 minutes]:
+time.Sleep(0x104c533c00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.sleepLoop(0x104c533c00)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:37 +0x2b
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:12 +0x56
+
+goroutine 19 [sleep, 1 minutes]:
+time.Sleep(0x3b9aca00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.sleepLoop(0x3b9aca00)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:37 +0x2b
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:13 +0x77
+
+goroutine 20 [chan receive, 1 minutes]:
+main.chanReceiveForever()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:43 +0x4d
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:14 +0x8f
+
+goroutine 22 [sleep, 1 minutes]:
+time.Sleep(0x3b9aca00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.sleepLoop(0x3b9aca00)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:37 +0x2b
+created by main.indirectSleepLoop2
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:51 +0x3f
+
+waiting indefinitely so you can press ctrl+\ to compare the output
+^\SIGQUIT: quit
+PC=0x7fff739f9882 m=0 sigcode=0
+
+goroutine 0 [idle]:
+runtime.pthread_cond_wait(0x1172620, 0x11725e0, 0x7ffe00000000)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/sys_darwin.go:414 +0x39
+runtime.semasleep(0xffffffffffffffff, 0x103af45)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/os_darwin.go:63 +0x8d
+runtime.notesleep(0x11723e8)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/lock_sema.go:181 +0xe7
+runtime.stopm()
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:1924 +0xc5
+runtime.findrunnable(0xc000029800, 0x0)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2485 +0xa7f
+runtime.schedule()
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2683 +0x2d7
+runtime.park_m(0xc000082600)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/proc.go:2851 +0x9d
+runtime.mcall(0x10613d6)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/asm_amd64.s:318 +0x5b
+
+goroutine 1 [chan receive, 3 minutes]:
+main.chanReceiveForever(...)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:43
+main.main()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:32 +0x33d
+
+goroutine 18 [sleep]:
+time.Sleep(0x104c533c00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.sleepLoop(0x104c533c00)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:37 +0x2b
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:12 +0x56
+
+goroutine 19 [sleep]:
+time.Sleep(0x3b9aca00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.sleepLoop(0x3b9aca00)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:37 +0x2b
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:13 +0x77
+
+goroutine 20 [chan receive, 4 minutes]:
+main.chanReceiveForever()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:43 +0x4d
+created by main.main
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:14 +0x8f
+
+goroutine 22 [sleep]:
+time.Sleep(0x3b9aca00)
+	/usr/local/Cellar/go/1.15.6/libexec/src/runtime/time.go:188 +0xbf
+main.sleepLoop(0x3b9aca00)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:37 +0x2b
+created by main.indirectSleepLoop2
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/runtime-stack/main.go:51 +0x3f
+
+rax    0x104
+rbx    0x2
+rcx    0x7ffeefbff248
+rdx    0xec00
+rdi    0x1172620
+rsi    0xec010000ed00
+rbp    0x7ffeefbff2e0
+rsp    0x7ffeefbff248
+r8     0x0
+r9     0xa0
+r10    0x0
+r11    0x202
+r12    0x1172620
+r13    0x16
+r14    0xec010000ed00
+r15    0x167fdc0
+rip    0x7fff739f9882
+rflags 0x203
+cs     0x7
+fs     0x0
+gs     0x0
+exit status 2
