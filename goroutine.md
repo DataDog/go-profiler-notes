@@ -2,18 +2,17 @@ This document was last updated for `go1.15.6` but probably still applies to olde
 
 # Goroutine Profiling in Go
 
-- [Goroutine Profiling in Go](#goroutine-profiling-in-go)
-  * [Description](#description)
-  * [Overhead](#overhead)
-  * [Goroutine Properties](#goroutine-properties)
-  * [APIs](#apis)
-    + [[`runtime.Stack()`](https://golang.org/pkg/runtime/#Stack) /  [`pprof.Lookup(debug=2)`](https://golang.org/pkg/runtime/pprof/#Lookup)](#--runtimestack-----https---golangorg-pkg-runtime--stack-------pproflookup-debug-2----https---golangorg-pkg-runtime-pprof--lookup-)
-    + [[`pprof.Lookup(debug=1)`](https://golang.org/pkg/runtime/pprof/#Lookup)](#--pproflookup-debug-1----https---golangorg-pkg-runtime-pprof--lookup-)
-    + [[`pprof.Lookup(debug=0)`](https://golang.org/pkg/runtime/pprof/#Lookup)](#--pproflookup-debug-0----https---golangorg-pkg-runtime-pprof--lookup-)
-    + [[`runtime.GoroutineProfile()`](https://golang.org/pkg/runtime/#GoroutineProfile)](#--runtimegoroutineprofile-----https---golangorg-pkg-runtime--goroutineprofile-)
-    + [[`net/http/pprof`](https://golang.org/pkg/net/http/pprof/)](#--net-http-pprof---https---golangorg-pkg-net-http-pprof--)
-  * [History](#history)
-  * [Disclaimers](#disclaimers)
+* [Description](#description)
+- [Overhead](#overhead)
+- [Goroutine Properties](#goroutine-properties)
+- [APIs](#apis)
+  + [[`runtime.Stack()`](https://golang.org/pkg/runtime/#Stack) /  [`pprof.Lookup(debug=2)`](https://golang.org/pkg/runtime/pprof/#Lookup)](#--runtimestack-----https---golangorg-pkg-runtime--stack-------pproflookup-debug-2----https---golangorg-pkg-runtime-pprof--lookup-)
+  + [[`pprof.Lookup(debug=1)`](https://golang.org/pkg/runtime/pprof/#Lookup)](#--pproflookup-debug-1----https---golangorg-pkg-runtime-pprof--lookup-)
+  + [[`pprof.Lookup(debug=0)`](https://golang.org/pkg/runtime/pprof/#Lookup)](#--pproflookup-debug-0----https---golangorg-pkg-runtime-pprof--lookup-)
+  + [[`runtime.GoroutineProfile()`](https://golang.org/pkg/runtime/#GoroutineProfile)](#--runtimegoroutineprofile-----https---golangorg-pkg-runtime--goroutineprofile-)
+  + [[`net/http/pprof`](https://golang.org/pkg/net/http/pprof/)](#--net-http-pprof---https---golangorg-pkg-net-http-pprof--)
+- [History](#history)
+- [Disclaimers](#disclaimers)
 
 ## Description
 
