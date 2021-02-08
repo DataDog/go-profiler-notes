@@ -141,42 +141,45 @@ func blocksampled(cycles int64) bool {
 
 This means that if you set your profiling `rate` low enough, you'll get very accurate results. However, if your `rate` is higher than the `duration` of some of the events you are sampling, the sampling process will exhibit a bias favoring infrequent events of higher `duration` over frequent events with lower `duration` even so they may contribute to the same amount of overall block duration in your program.
 
-#### Example 1
+#### Simple Example
 
-A simple example: Let's say your `blockprofilerate` is `100ns` and your application produces the following events:
+Let's say your `blockprofilerate` is `100ns` and your application produces the following events:
 
 - `A`: `1` event with a duration of `100ns`.
 - `B`: `10` events with a duration of `10ns` each.
 
 Given this scenario, the `blockprofiler` is guaranteed to catch and accurately report event `A` as `100ns` in the profile. For event `B`  the most likely outcome is that the profiler will capture only a single event (10% of 10 events) and report `B` as `10ns` in the profile. So you might find yourself in a situation where you think event `A` is causing 10x more blocking than event `B`, which is not true.
 
-#### Example 2 & Proposal for Improvement
+#### Simulation & Proposal for Improvement
 
-For an even better intuition about this, consider the [simulated example](./sim/block_sampling.ipynb) below. Here we have a histogram of all durations collected from 3 types of blocking events. As you can see, they all have different mean durations (`1000ns`, `2000ns`, `3000ns`) and they are occurring at different frequencies, with `count(a) > count(b) > count(c)`. What's more difficult to see, is that the cumulative durations of these events are the same, i.e. `sum(a) = sum(b) = sum(c)`.
+For an even better intuition about this, consider the [simulated example](./sim/block_sampling.ipynb) below. Here we have a histogram of all durations collected from 3 types of blocking events. As you can see, they all have different mean durations (`1000ns`, `2000ns`, `3000ns`) and they are occurring at different frequencies, with `count(a) > count(b) > count(c)`. What's more difficult to see, is that the cumulative durations of these events are the same, i.e. `sum(a) = sum(b) = sum(c)`, but you can trust me on that : ).
 
 <img src="./sim/block_sampling_hist.png" style="zoom: 80%;" />
 
-So given that your application might produce events like this, how will they show up in your block profile as you try out different `blockprofilerates`? As you can see below, all is well and fine until a `blockprofilerate` of `1000ns`. Each event shows up with the same total duration in the profile (the red and green dots are hidden below the blue ones, but they are there, trust me). However starting at `1000ns` you see that event `a` starts to fade from our profile and at `2000ns` you'd already think that events `b` and `c` are causing twice as much blocking time as event `a`.
+So given that your application might produce events like this, how will they show up in your block profile as you try out different `blockprofilerate` values? As you can see below, all is well and fine until a `blockprofilerate` of `1000ns`. Each event shows up with the same total duration in the profile (the red and green dots are hidden below the blue ones). However starting at `1000ns` you see that event `a` starts to fade from our profile and at `2000ns` you'd already think that events `b` and `c` are causing twice as much blocking time as event `a`.
 
 <img src="./sim/block_sampling_biased.png" style="zoom:80%;" />
 
-So what can we do? Do we always need to live in fear of bias when working with block profiles? No! If the [Overhead](#overhead) for your workload allows it, the simplest solution is to use a low enough `blockprofilerate` that allows you to capture most blocking events.
+So what can we do? Do we always need to live in fear of bias when working with block profiles? No! If the [Overhead](#overhead) for your workload allows it, the simplest solution is to use a low enough `blockprofilerate` in order to capture most blocking events.
 
 But perhaps there is an even better way. I'm thinking we could correct for the current bias by keeping the same logic of sampling `duration / rate` fraction of events when `duration < rate`. However, when this happens we could simply multiply the sampled duration like this:
 
 ```
 duration = duration * (rate/duration)
+# note: the expression above can be simplified to just `duration = rate`
 ```
 
-Doing so could be done with a trivial patch to the go runtime and the picture below shows the results from simulating it. So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to send a patch for it soon. That being said, I'm not trained in statistics, so my naive ideas might be hilariously misguided.
+Doing so could be done with a trivial patch to the go runtime and the picture below shows the results from simulating it. So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to send a patch for it soon. That being said, I'm not trained in statistics, so my analysis here might be hilariously misguided.
 
 
 
 <img src="./sim/block_sampling_debiased.png" alt="" style="zoom: 80%;" />
 
+🚧 It might be possible to reduce the bias in block profiles after recording them. I've got a [proof of concept](https://github.com/felixge/go-debias-blockprofile) for this, but it's not clear yet if this will work well in practice.
+
 ### Time Stamp Counter
 
-`amd64` and other platforms use [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter) for implementing the `cputicks()` function. This technique has been historically challenged by problems with frequency scaling and other kinds of CPU power transitions. Modern CPUs should provide invariant TSCs, but at [least some Go users](https://github.com/golang/go/issues/16755#issuecomment-332279965) are reporting issues. I can't tell whether those are due to broken hardware or issues regarding multi-socket systems, but hope to do more research on this in the future.
+`amd64` and other platforms use [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter) for implementing the `cputicks()` function. This technique has been historically challenged by problems with frequency scaling and other kinds of CPU power transitions. Modern CPUs should provide invariant TSCs, but at [least some Go users](https://github.com/golang/go/issues/16755#issuecomment-332279965) are still reporting issues. I can't tell whether those are due to broken hardware or issues regarding multi-socket systems, but hope to do more research on this in the future.
 
 Please also note the bug description in the [Initialization Time](#initialization-time) section which may impact the accuracy of converting cputicks to wall clock time.
 
@@ -186,25 +189,53 @@ The max stack depth for block profiles is [32](https://github.com/golang/go/blob
 
 ### Spin Locks
 
-As described earlier, contended Go mutexes will first try to [spin](https://en.wikipedia.org/wiki/Spinlock) for a bit before yielding to the scheduler. If the spinning is successful, not block event will be tracked. This presents another subtle bias in the block profiler towards events of longer duration.
+As described earlier, contended Go mutexes will first try to [spin](https://en.wikipedia.org/wiki/Spinlock) for a bit before yielding to the scheduler. If the spinning is successful, no block event will be tracked. This presents another subtle bias in the block profiler towards events of longer duration.
 
-🚧 Todo: Research this a bit more
+🚧 This section needs more research that I'll do as part of my mutex profiler note.
 
 ## Relationship with Wall Clock Time
 
-🚧 To be written ...
+Blocking time is not bound by wall clock time. Multiple goroutines can simultaneously spend time blocking, which means it's possible to see profiles with a cumulative block duration that exceeds the runtime of the program.
 
 ## Relationship with Mutex Profiling
 
-🚧 To be written ...
+The [mutex](./mutex.md) profiling feature in Go overlaps with block profiling. It seems like both can be used to understand mutex contention. When using the mutex profiler it will report the `Unlock()` call sites rather than the `Lock()` call sites reported by the block profiler. The mutex profiler also uses a simpler and probably unbiased sampling mechanism which should make it more accurate. However, the mutex profiler does not cover channel contention, so the block profiler is a bit more flexible. When the mutex and block profiler are both enabled, it seems likely that some overhead will be wasted on tracking duplicate contention events.
+
+🚧 This section needs more research that I'll do as part of my mutex profiler notes.
+
+## Profiler Labels
+
+The block profiler does not support [profiler labels](https://rakyll.org/profiler-labels/) right now, but it seems like this might be easy to implement in the future.
 
 ## pprof Output
 
-🚧 To be written ...
+Below is an example of block profile encoded in [pprof's protobuf format](./pprof). There are two value types:
 
-## pprof Labels
+- contentions/count
+- delay/nanoseconds
 
-🚧 To be written ...
+The `blockprofilerate` used to create the profile is not included, neither are [profiler labels](./profiler-labels).
+
+```
+$ go tool pprof -raw block.pb.gz 
+PeriodType: contentions count
+Period: 1
+Time: 2021-02-08 14:53:53.243777 +0100 CET
+Samples:
+contentions/count delay/nanoseconds
+      22820  867549417: 1 2 3 4 
+      22748  453510869: 1 2 5 4 
+Locations
+     1: 0x10453af M=1 runtime.selectgo /usr/local/Cellar/go/1.15.6/libexec/src/runtime/select.go:511 s=0
+     2: 0x10d082b M=1 main.simulateBlockEvents /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/block-sample/main.go:71 s=0
+     3: 0x10d0b72 M=1 main.eventB /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/block-sample/main.go:57 s=0
+             main.run.func2 /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/block-sample/main.go:33 s=0
+     4: 0x10d01b8 M=1 golang.org/x/sync/errgroup.(*Group).Go.func1 /Users/felix.geisendoerfer/go/pkg/mod/golang.org/x/sync@v0.0.0-20201207232520-09787c993a3a/errgroup/errgroup.go:57 s=0
+     5: 0x10d0b12 M=1 main.eventA /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/block-sample/main.go:53 s=0
+             main.run.func1 /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/block-sample/main.go:30 s=0
+Mappings
+1: 0x0/0x0/0x0   [FN]
+```
 
 ## History
 
