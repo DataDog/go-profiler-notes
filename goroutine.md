@@ -2,6 +2,8 @@ This document was last updated for `go1.15.6` but probably still applies to olde
 
 # Goroutine Profiling in Go
 
+<!-- https://ecotrust-canada.github.io/markdown-toc/ with API section deleted b/c of issues -->
+
 * [Description](#description)
 - [Overhead](#overhead)
 - [Goroutine Properties](#goroutine-properties)
