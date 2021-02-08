@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime"
@@ -18,6 +19,10 @@ func main() {
 }
 
 func run() error {
+	labels := pprof.Labels("test_label", "test_value")
+	ctx := pprof.WithLabels(context.Background(), labels)
+	pprof.SetGoroutineLabels(ctx)
+
 	runtime.SetBlockProfileRate(int((40 * time.Microsecond).Nanoseconds()))
 	done := make(chan struct{})
 	g := errgroup.Group{}
