@@ -185,22 +185,22 @@ So given that your application might produce events like this, how will they sho
 
 So what can we do? Do we always need to live in fear of bias when working with block profiles? No! If the [Overhead](#overhead) for your workload allows it, the simplest solution is to use a low enough `blockprofilerate` in order to capture most blocking events.
 
-But perhaps there is an even better way. I'm thinking we could correct for the current bias by keeping the same logic of sampling `duration / rate` fraction of events when `duration < rate`. However, when this happens we could simply multiply the sampled duration like this:
+But perhaps there is an even better way. I'm thinking we could correct for the current bias by keeping the same logic of sampling `duration / rate` fraction of events when `duration < rate`. However, when this happens we could simply multiply the sampled duration by `rate/duration` like this:
 
 ```
 duration = duration * (rate/duration)
 # note: the expression above can be simplified to just `duration = rate`
 ```
 
-Doing so could be done with a [trivial patch](https://github.com/felixge/go/compare/master...debias-blockprofile-rate) to the go runtime and the picture below shows the results from simulating it. So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to work with the Go project on that.
-
-That being said, I'm not trained in statistics, so my analysis here might be hilariously misguided 🙃.
-
-
+Doing so could be done with a [trivial patch](https://github.com/felixge/go/compare/master...debias-blockprofile-rate) to the go runtime and the picture below shows the results from simulating it.
 
 <img src="./sim/block_sampling_debiased.png" alt="" style="zoom: 80%;" />
 
-🚧 It might be possible to reduce the bias in block profiles after recording them. I've got a [proof of concept](https://github.com/felixge/go-debias-blockprofile) for this, but it's not clear yet if this will work well in practice.
+So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to work with the Go project on that.
+
+That being said, I'm not trained in statistics, so my analysis here might be hilariously misguided 🙃.
+
+🚧 It might also be possible to reduce the bias in block profiles after recording them. I've got a [proof of concept](https://github.com/felixge/go-debias-blockprofile) for this, but it's not clear yet if this will work well in practice.
 
 ### Time Stamp Counter
 
