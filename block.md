@@ -196,7 +196,7 @@ Doing so could be done with a [trivial patch](https://github.com/felixge/go/comp
 
 <img src="./sim/block_sampling_debiased.png" alt="" style="zoom: 80%;" />
 
-So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to work with the Go project on that.
+So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to [work with the Go project](https://github.com/golang/go/issues/44192) on that.
 
 That being said, I'm not trained in statistics, so my analysis here might be hilariously misguided 🙃.
 
