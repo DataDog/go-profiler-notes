@@ -4,14 +4,11 @@ I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on 
 
 - [pprof tool & format](./pprof.md): Describes the pprof tool and it's binary data format.
 - [Goroutine Profiling](./goroutine.md)
-
-## Todo
-
-- CPU Profiling
-- Heap Profiling
-- Mutex Profiling
-- Block Profiling
-- Wallclock Profiling (fgprof)
+- [Block Profiling](./block.md)
+- CPU Profiling (🚧 coming soon!)
+- Heap Profiling (🚧 coming soon!)
+- Mutex Profiling (🚧 coming soon!)
+- Wallclock Profiling  (🚧 coming soon!)
 
 ## External Links
 
@@ -31,6 +28,6 @@ Got great links to recommend? Open an issue or PR, I'd happy to add your suggest
 
 ## Disclaimers
 
-I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go (you should check it out) and they generously allowed me to do all this research and publish it.
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out. We're also [hiring](https://www.datadoghq.com/jobs-engineering/#all&all_locations) : ).
 
 The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!
