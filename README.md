@@ -26,6 +26,10 @@ I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on 
 
 Got great links to recommend? Open an issue or PR, I'd happy to add your suggestions : ).
 
+## License
+
+The markdown files in this repository are licensed under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).
+
 ## Disclaimers
 
 I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out. We're also [hiring](https://www.datadoghq.com/jobs-engineering/#all&all_locations) : ).
