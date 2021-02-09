@@ -192,7 +192,9 @@ duration = duration * (rate/duration)
 # note: the expression above can be simplified to just `duration = rate`
 ```
 
-Doing so could be done with a trivial patch to the go runtime and the picture below shows the results from simulating it. So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to send a patch for it soon. That being said, I'm not trained in statistics, so my analysis here might be hilariously misguided.
+Doing so could be done with a [trivial patch](https://github.com/felixge/go/compare/master...debias-blockprofile-rate) to the go runtime and the picture below shows the results from simulating it. So from my point of view it should be possible to eliminate this bias from future versions of Go and I'm planning to work with the Go project on that.
+
+That being said, I'm not trained in statistics, so my analysis here might be hilariously misguided 🙃.
 
 
 
