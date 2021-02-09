@@ -266,6 +266,6 @@ Block profiling was [implemented](https://codereview.appspot.com/6443115) by [Dm
 
 ## Disclaimers
 
-I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out : ).
+I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out. We're also [hiring](https://www.datadoghq.com/jobs-engineering/#all&all_locations) : ).
 
 The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!
