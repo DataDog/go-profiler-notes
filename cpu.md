@@ -73,7 +73,10 @@ The various ways one can record CPU profiles in Go are listed below.
 - setitimer
 - Profiler labels
 - bias
-- performance overhead
+- performance overhead (including negative!)
+  - https://github.com/golang/go/issues/38325
+- accuracy
+  - https://github.com/golang/go/issues/35057
 - Discuss [Proposal: hardware performance counters for CPU profiling.](https://go.googlesource.com/proposal/+/refs/changes/08/219508/2/design/36821-perf-counter-pprof.md)
 
 ## Disclaimers
