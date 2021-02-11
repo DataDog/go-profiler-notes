@@ -12,7 +12,7 @@ The pprof tool features an interactive command line interface, but also a Web UI
 
 The pprof format is defined in the [profile.proto](https://github.com/google/pprof/blob/master/proto/profile.proto) protocol buffer definition which has good comments. Additionally there is an official [README](https://github.com/google/pprof/blob/master/proto/README.md) for it. pprof files are always stored using gzip-compression on disk.
 
-A picture is worth a thousand words, so below is an automatically [generated](https://github.com/seamia/protodot) visualization of the format. Please not that fields such as `filename` are pointers into the `string_table` which are not visualized, improvements for this would be welcome!
+A picture is worth a thousand words, so below is an automatically [generated](https://github.com/seamia/protodot) visualization of the format. Please note that fields such as `filename` are pointers into the `string_table` which are not visualized, improvements for this would be welcome!
 
 
 
