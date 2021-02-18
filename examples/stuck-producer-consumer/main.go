@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"runtime"
-	"sync"
 	"time"
 
 	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
@@ -17,11 +17,12 @@ func main() {
 		os.Exit(1)
 	}
 }
+
 func run() error {
 	if err := os.Setenv("DD_PROFILING_WAIT_PROFILE", "yes"); err != nil {
 		return err
 	} else if err := profiler.Start(
-		profiler.WithService("stuck-deadlock"),
+		profiler.WithService("stuck-producer-consumer"),
 		profiler.WithVersion(time.Now().String()),
 		profiler.WithPeriod(60*time.Second),
 		profiler.WithProfileTypes(
@@ -31,12 +32,11 @@ func run() error {
 		return err
 	}
 
-	var (
-		a = &sync.Mutex{}
-		b = &sync.Mutex{}
-	)
-	go bob(a, b)
-	go alice(a, b)
+	rand.Seed(time.Now().UnixNano())
+
+	workCh := make(chan struct{})
+	go consumer(workCh)
+	go producer(workCh)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -53,27 +53,31 @@ func run() error {
 			return nil
 		}
 	}
-	return nil
 }
 
-func bob(a, b *sync.Mutex) {
+func producer(workCh chan<- struct{}) {
 	for {
-		fmt.Println("bob is okay")
-		a.Lock()
-		b.Lock()
-		// do stuff
-		a.Unlock()
-		b.Unlock()
+		select {
+		case workCh <- struct{}{}:
+			if rand.Int63n(10) == 0 {
+				takeNap()
+			}
+		default:
+		}
 	}
 }
 
-func alice(a, b *sync.Mutex) {
+func consumer(workCh <-chan struct{}) {
 	for {
-		fmt.Println("alice is okay")
-		b.Lock()
-		a.Lock()
-		// do stuff
-		b.Unlock()
-		a.Unlock()
+		<-workCh
+		if rand.Int63n(10) == 0 {
+			takeNap()
+		}
 	}
+}
+
+func takeNap() {
+	fmt.Printf("taking a nap\n")
+	var forever chan struct{}
+	<-forever
 }
