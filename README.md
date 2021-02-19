@@ -4,9 +4,9 @@ Hey there 👋🏻, I'm [felixge](https://github.com/felixge) and I've just star
 
 I found that Go has a lot of profilers and there are many tools for looking at the data, but that there is very little information on what any of it means. So in order to make sure that I know what I'm talking about, I've started to research the existing profilers and how they work. This repository is my attempt to summarize my findings in the hope that it might be useful to others.
 
-- [pprof tool & format](./pprof.md): Describes the pprof tool and it's binary data format.
-- [Goroutine Profiling](./goroutine.md)
-- [Block Profiling](./block.md)
+- [pprof tool & format](./pprof.md): Describes the pprof tool and the binary data format for storing profiles.
+- [Goroutine Profiling](./goroutine.md): Allows you to get a list of all active goroutines and what they're currently doing.
+- [Block Profiling](./block.md): Understand how much time your code spends waiting on networking, locks and channel operations.
 - CPU Profiling (🚧 coming soon!)
 - Heap Profiling (🚧 coming soon!)
 - Mutex Profiling (🚧 coming soon!)
