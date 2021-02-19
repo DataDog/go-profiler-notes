@@ -1,6 +1,8 @@
 # go-profiler-notes
 
-I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. To make sure that I know what I'm talking about, I'm planning to do an in-depth study of the existing profilers and how they work. I'll try to summarize what I learned in this repository as it might be useful to others.
+Hey there 👋🏻, I'm [felixge](https://github.com/felixge) and I've just started a new job at [Datadog](https://www.datadoghq.com/) to work on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go.
+
+I found that Go has a lot of profilers and there are many tools for looking at the data, but that there is very little information on what any of it means. So in order to make sure that I know what I'm talking about, I've started to research the existing profilers and how they work. This repository is my attempt to summarize my findings in the hope that it might be useful to others.
 
 - [pprof tool & format](./pprof.md): Describes the pprof tool and it's binary data format.
 - [Goroutine Profiling](./goroutine.md)
@@ -32,6 +34,6 @@ The markdown files in this repository are licensed under the [CC BY-SA 4.0 licen
 
 ## Disclaimers
 
-I work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out. We're also [hiring](https://www.datadoghq.com/jobs-engineering/#all&all_locations) : ).
+I'm [felixge](https://github.com/felixge) and work at [Datadog](https://www.datadoghq.com/) on [Continuous Profiling](https://www.datadoghq.com/product/code-profiling/) for Go. You should check it out. We're also [hiring](https://www.datadoghq.com/jobs-engineering/#all&all_locations) : ).
 
 The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!
