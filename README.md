@@ -6,7 +6,7 @@ I found that Go has a lot of profilers and there are many tools for looking at t
 
 - [pprof tool & format](./pprof.md): Describes the pprof tool and the binary data format for storing profiles.
 - [Goroutine Profiling](./goroutine.md): Allows you to get a list of all active goroutines and what they're currently doing.
-- [Block Profiling](./block.md): Understand how much time your code spends waiting on networking, locks and channels.
+- [Block Profiling](./block.md): Understand how much time your code spends waiting on channels and locks.
 - CPU Profiling (🚧 coming soon!)
 - Heap Profiling (🚧 coming soon!)
 - Mutex Profiling (🚧 coming soon!)
