@@ -14,7 +14,7 @@ The pprof format is defined in the [profile.proto](https://github.com/google/ppr
 
 A picture is worth a thousand words, so below is an automatically [generated](https://github.com/seamia/protodot) visualization of the format. Please note that fields such as `filename` are pointers into the `string_table` which are not visualized, improvements for this would be welcome!
 
-
+<!-- TODO: fix dark mode -->
 
 <img src="./profile.png" alt="profile.proto visualized" style="zoom: 80%;" />
 
