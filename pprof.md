@@ -151,6 +151,12 @@ period: 10000000
 
 The output above is truncated also, [pprof.samples.cpu.001.protoc.txt](./examples/cpu/pprof.samples.cpu.001.protoc.txt) has the full version.
 
+## History
+
+The [original pprof tool](https://github.com/gperftools/gperftools/blob/master/src/pprof) was a perl script developed internally at Google. Based on the copyright header, development might go back to 1998. It was first released in 2005 as part of [gperftools](https://github.com/google/tcmalloc/blob/master/docs/gperftools.md), and [added](https://github.com/golang/go/commit/c72fb37425f6ee6297371e0053d6d1f958d49a41) to the Go project in 2010.
+
+In 2014 the Go project [replaced](https://github.com/golang/go/commit/8b5221a57b41a19abcb4e3dde20014af494048c2) the perl based version of the pprof tool with a Go implementation by [Raul Silvera](https://www.linkedin.com/in/raul-silvera-a0521b55/) that was already used inside of Google at this point. This implementation was re-released as a [standalone project](https://github.com/google/pprof) in 2016. Since then the Go project has been vendoring a copy of the upstream project, [updating](https://github.com/golang/go/commits/master/src/cmd/vendor/github.com/google/pprof) it on a regular basis.
+
 ## Todo
 
 - Write more about using `go tool pprof` itself.
