@@ -1,6 +1,8 @@
 # Go's pprof tool & format
 
-The various profilers built into Go are designed to work with the [pprof visualization tool](https://github.com/google/pprof). The upstream pprof tool is designed to work with C++, Java and Go programs, but it's recommended to access the tool via the `go tool pprof` version that's [bundled](https://github.com/golang/go/tree/master/src/cmd/pprof) with the Go core. It's largely the same except for a few tweaks.
+The various profilers built into Go are designed to work with the pprof visualization tool. [pprof](https://github.com/google/pprof) itself is an inofficial Google project that is designed to analyze profiling data from C++, Java and Go programs. The project defines a protocol buffer format that is used by all Go profilers and described in this document.
+
+The Go project itself [bundles](https://github.com/golang/go/tree/master/src/cmd/pprof) a version of pprof that can be invoked via  `go tool pprof`. It's largely the same as the upstream tool, except for a few tweaks. Go recommends to always use `go tool pprof` instead of the upstream tool for working with Go profiles.
 
 ## Features
 
