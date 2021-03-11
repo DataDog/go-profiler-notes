@@ -74,7 +74,7 @@ Block durations are aggregated over the lifetime of the program (while the profi
 pprof.Lookup("block").WriteTo(myFile, 0)
 ```
 
-Alternatively you can use [github.com/pkg/profile](https://pkg.go.dev/github.com/pkg/profile) for convenience, or [net/http/pprof](net/http/pprof) to expose profiling via http, or use a [continious profiler](https://www.datadoghq.com/product/code-profiling/) to collect the data automatically in production.
+Alternatively you can use [github.com/pkg/profile](https://pkg.go.dev/github.com/pkg/profile) for convenience, or [net/http/pprof](https://golang.org/pkg/net/http/pprof/) to expose profiling via http, or use a [continious profiler](https://www.datadoghq.com/product/code-profiling/) to collect the data automatically in production.
 
 Last but not least you can use the [`runtime.BlockProfile`](https://golang.org/pkg/runtime/#BlockProfile) API to get the same information in a structured format.
 
@@ -123,7 +123,7 @@ Anyway, what does all of this mean in terms of overhead for your application? It
 
 That being said, the benchmark results below (see [Methodology](./bench/)) should give you an idea of the **theoretical worst case** overhead block profiling could have. The graph `chan(cap=0)` shows that setting `blockprofilerate` from  `1` to `1000` on a [workload](./bench/workload_chan.go) that consists entirely in sending tiny messages across unbuffered channels decreases throughput significantly. Using a buffered channel as in graph `chan(cap=128)` greatly reduces the problem to the point that it probably won't matter for real applications that don't spend all of their time on channel communication overheads.
 
-It's also interesting to note that I was unable to see significant overheads for [`mutex`](.bench/workload_mutex.go) based workloads. I believe this is due to the fact that mutexes employe spin locks before parking a goroutine when there is contention. If somebody has a good idea for a workload that exhibits high non-spinning mutex contention in Go, please let me know!
+It's also interesting to note that I was unable to see significant overheads for [`mutex`](./bench/workload_mutex.go) based workloads. I believe this is due to the fact that mutexes employe spin locks before parking a goroutine when there is contention. If somebody has a good idea for a workload that exhibits high non-spinning mutex contention in Go, please let me know!
 
 Anyway, please remember that the graphs below show workloads that were specifically designed to trigger the worst block profiling overhead you can imagine. Real applications will usually see no significant overhead, especially when using a `blockprofilerate` >= `10000` (10µs).
 
