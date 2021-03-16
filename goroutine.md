@@ -7,6 +7,7 @@ This document was last updated for `go1.15.6` but probably still applies to olde
 - [Description](#description)
 - [Overhead](#overhead)
 - [Goroutine Properties](#goroutine-properties)
+- [Feature Matrix](#feature-matrix)
 - [APIs](#apis)
 - [History](#history)
 - [Disclaimers](#disclaimers)
@@ -52,6 +53,8 @@ Goroutines have a lot of [properties](https://github.com/golang/go/blob/go1.15.6
 - `stack trace`:  The function that is currently being executed as well as its callers. This is exposed as either a plain text output of filenames, function names and line numbers or a slice of program counter addresses (pcs).  🚧 *Research more details on this, e.g. can func/file/line text be converted to pcs?*
 - [`gopc`](https://github.com/golang/go/blob/go1.15.6/src/runtime/runtime2.go#L466): The program counter address (pc) of the `go ...` call that caused this goroutine to be created. Can be converted to the file, function name and line number.
 - [`lockedm`](https://github.com/golang/go/blob/go1.15.6/src/runtime/runtime2.go#L460): The thread this goroutine is locked to, if any.
+
+## Feature Matrix
 
 The feature matrix below give you a quick idea on the current availability of these properties through the various APIs. Also available as a [google sheet](https://docs.google.com/spreadsheets/d/1txMRjhDA0NC9eSNRRUMMFI5uWJ3FBnACGVjXYT1gKig/edit?usp=sharing).
 
