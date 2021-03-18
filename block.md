@@ -4,7 +4,8 @@ This document was last updated for `go1.15.7` but probably still applies to olde
 
 <!-- https://ecotrust-canada.github.io/markdown-toc/ -->
 
-* [Description](#description)
+- [Description](#description)
+
 * [Usage](#usage)
 * [Overhead](#overhead)
   + [Implementation Details](#implementation-details)
