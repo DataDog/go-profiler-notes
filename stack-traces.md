@@ -6,11 +6,11 @@ Stack traces play a critical role in Go profiling. So let's try to understand th
 
 All Go profilers work by collecting samples of stack trace  and putting them into [pprof profiles](./pprof.md). Ignoring some details, a pprof profile is just a frequency table of stack traces like shown below:
 
-| stack trace  | samples/count |
-| ------------ | ------------- |
-| main;foo     | 5             |
-| main;foo;bar | 3             |
-| main;foobar  | 4             |
+| stack trace  | count |
+| ------------ | ----- |
+| main;foo     | 5     |
+| main;foo;bar | 3     |
+| main;foobar  | 4     |
 
 Let's zoom in on the second stack trace in the table above: `main;foo;bar`. A Go developer will usually be more familiar with seeing a stack trace like this as rendered by `panic()` or  [`runtime.Stack()`](https://golang.org/pkg/runtime/#Stack) shown below:
 
