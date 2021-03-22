@@ -1,8 +1,4 @@
-# TODO
-# Get stack lo from goroutine
-# Use the stacktrace API to unwind the stack and get annotations
-
-word_size = 8 # 64bit
+word_size = 8 # 64bit only for now
 
 def get_reg(name):
   for req in registers().Regs:
@@ -142,11 +138,6 @@ def command_stackannotate():
       note,
     ])
   print(ascii_table(rows))
-
-  #g = getg()
-  #for f in stacktrace(g.goid, 128, True).Locations:
-    #print(f)
-    #break
 
 def main():
   dlv_command("config alias stackannotate sa")
