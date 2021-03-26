@@ -20,7 +20,7 @@ func BenchmarkProfilerGoroutines(b *testing.B) {
 			readyCh := make(chan struct{})
 			stopCh := make(chan struct{})
 			for i := 0; i < g; i++ {
-				go atStackDepth(8, func() {
+				go atStackDepth(16, func() {
 					defer func() { stopCh <- struct{}{} }()
 					readyCh <- struct{}{}
 				})
