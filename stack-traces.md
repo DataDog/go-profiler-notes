@@ -108,30 +108,26 @@ If you want to try it out yourself, perhaps modify the example program to spawn 
 
 ## Unwinding
 
-Unwinding (or stack walking) is the process of collecting all the return addresses (see red elements in [Stack Layout](#stack-layout)) from the stack. Together with the current instruction pointer register (`rip`) they form a list of program counter (pc) values that represent a stack trace.
+Unwinding (or stack walking) is the process of collecting all the return addresses (see red elements in [Stack Layout](#stack-layout)) from the stack. Together with the current instruction pointer register (`rip`) they form a list of program counter (pc) values that can be turned into a human readable stack trace via  [Symbolization](#symbolization).
 
-Conceptually unwinding can be seen as a separate step from [Symbolization](#symbolization), however in practice implementations often intertwine the two.
-
-The Go runtime, including the builtin profilers, exclusively use  [.gopclntab](#gopclntab) for unwinding. However, we'll start with describing [Frame Pointer](#frame-pointer) unwinding first, because it's a much easier technique to understand.
+The Go runtime, including the builtin profilers, exclusively use  [.gopclntab](#gopclntab) for unwinding. However, we'll start with describing [Frame Pointer](#frame-pointer) unwinding first, because it is much easier to understand and might [become the default in the future](https://github.com/golang/go/issues/16638).
 
 ### Frame Pointer
 
-Frame pointer unwinding is the simple process of following the base pointer register (`rbp`) to the first frame pointer on the stack which points to the next frame pointer and so on. In other words, it is following the orange lines in the [Stack Layout](#stack-layout) graphic. For each visited frame pointer, the return address (pc) sits 8 bytes above the frame pointer address.
+Frame pointer unwinding is the simple process of following the base pointer register (`rbp`) to the first frame pointer on the stack which points to the next frame pointer and so on. In other words, it is following the orange lines in the [Stack Layout](#stack-layout) graphic. For each visited frame pointer, the return address (pc) sitting 8 bytes above the frame pointer is collected along the way.
 
-Go only started to include frame pointers on the stack by default since [Go 1.7](https://golang.org/doc/go1.7), and only does so for [64bit binaries](https://sourcegraph.com/search?q=framepointer_enabled+repo:%5Egithub%5C.com/golang/go%24+&patternType=literal). Even so that might cover the platforms most of us care about, it forces the Go runtime and builtin profilers to use a more complicated unwinding approach outlined in [.gopclntab](#gopclntab) that works on all supported platforms.
-
-However, this doesn't mean the frame pointers are useless. 3rd party debuggers and profilers (e.g. [perf](http://www.brendangregg.com/perf.html)) do not understand Go's idiosyncratic unwinding tables, so they rely on frame pointers (and/or [DWARF](#dwarf)) for getting stack traces. 
-
-
-
-
-
-https://github.com/felixge/gounwind/blob/main/gounwind.go
+The main downside to frame pointers is that they add some performance overhead to every function call during normal program execution. Because of this compilers such as `gcc` offer options such as `-fomit-frame-pointers` to omit them for better performance. However, it's a devil's bargain: It gives you small performance win right away, but it reduces your ability to debug and diagnose performance issues in the future. Because of this the general advice is:
 
 > Always compile with frame pointers. Omitting frame pointers is an evil compiler optimization that breaks debuggers, and sadly, is often the default.
 > – [Brendan Gregg](http://www.brendangregg.com/perf.html)
 
+Despite this Go used to omit frame pointers which caused interoperability issues with third party debuggers and profilers such as [Linux perf](http://www.brendangregg.com/perf.html). Fortunately the Go developers recognized the issue and since [Go 1.7](https://golang.org/doc/go1.7) frame pointers are always included for [64bit binaries ](https://sourcegraph.com/search?q=framepointer_enabled+repo:%5Egithub%5C.com/golang/go%24+&patternType=literal). And unlike `gcc`, the Go compiler offers no option to disable frame pointers, which is a good thing in my opinion.
 
+Anyway, if all of this is too abstract for you, and you'd like to see some code, [here](https://github.com/felixge/gounwind/blob/5cc8505361807a22169595999689bd793ed6d391/gounwind.go) is an alternative `runtime.Callers()` implementation that uses frame pointer unwinding instead of [.gopclntab](#gopclntab). The simplicity should speak for itself when compared to the alternative methods described below.
+
+### .gopclntab
+
+### DWARF
 
 > An unwinder that is several hundred lines long is simply not even *remotely* interesting to me.
 > – [Linus Torvalds](https://lkml.org/lkml/2012/2/10/356)
@@ -140,38 +136,6 @@ https://github.com/felixge/gounwind/blob/main/gounwind.go
 > – [David Sanchez](https://www.linkedin.com/in/david-sanchez-34289130/) (my colleague, who knows more about DWARF than any sane person probably should)
 
 
-
-https://github.com/felixge/gounwind
-
-
-
-
-
-For debuggers and profiling tools (not just in Go), frame pointer unwinding is the most universal, simplest, fastest and most reliable ways to get stack traces utilized 
-
-
-
- Some compilers offer options such as `-fomit-frame-pointers` to d
-
-In order to support 3rd party profiling tools such as [perf](http://www.brendangregg.com/perf.html), Go started to include frame pointers in every stack frame of  since . 
-
-
-
-
-
- [.gopclntab](##gopclntab) for 
-
-
-
-In fact, [until recently](https://lwn.net/Articles/727553/), the Linux Kernel rejected anything other than frame pointers for stack unwinding despite causing up to 5-10% slowdown for some workloads. Go reported the overhead as 2% in the Go 1.7 release notes.
-
-### .gopclntab
-
-To be written ...
-
-### DWARF
-
-To be written ...
 
 ### ORC, LBR, etc.
 
@@ -184,6 +148,10 @@ To be written ...
 To be written ...
 
 - Frame Pointers: 2% for Go, Linux 5-10%
+
+In fact, [until recently](https://lwn.net/Articles/727553/), the Linux Kernel rejected anything other than frame pointers for stack unwinding despite causing up to 5-10% slowdown for some workloads. Go reported the overhead as 2% in the Go 1.7 release notes.
+
+File size.
 
 ## Accuracy
 
