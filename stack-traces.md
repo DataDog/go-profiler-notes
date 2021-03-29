@@ -6,7 +6,7 @@ Stack traces play a critical role in Go profiling. So let's try to understand th
 
 ## Introduction
 
-All Go profilers work by collecting samples of stack trace  and putting them into [pprof profiles](./pprof.md). Ignoring some details, a pprof profile is just a frequency table of stack traces like shown below:
+All Go profilers work by collecting samples of stack traces and putting them into [pprof profiles](./pprof.md). Ignoring some details, a pprof profile is just a frequency table of stack traces like shown below:
 
 | stack trace  | count |
 | ------------ | ----- |
@@ -28,9 +28,9 @@ This text format has been [described elsewhere](https://www.ardanlabs.com/blog/2
 
 ## Goroutine Stack
 
-As the name implies, stack traces originate from "the stack". Even so the details vary, most programming languages have a concept of a stack and use it to store things like local variables, arguments and return values and return addresses. Generating a stack trace usually involves navigating the stack in a process known as [Unwinding](#unwinding) that will be described in more detail later on.
+As the name implies, stack traces originate from "the stack". Even so the details vary, most programming languages have a concept of a stack and use it to store things like local variables, arguments, return values and return addresses. Generating a stack trace usually involves navigating the stack in a process known as [Unwinding](#unwinding) that will be described in more detail later on.
 
-Platforms like `x86-64` define a [stack layout](https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64) and calling convention for C and encourage other programming languages to adopt it for interoperability. Go doesn't follow these conventions, and instead uses its own idiosyncratic [calling convention](https://dr-knz.net/go-calling-convention-x86-64.html). Future versions of Go (1.17?) will adopt another [register-based](https://go.googlesource.com/proposal/+/refs/changes/78/248178/1/design/40724-register-calling.md) convention that will increase performance. However compatibility with platform conventions is not planned as it would negatively impact goroutine scalability.
+Platforms like `x86-64` define a [stack layout](https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64) and calling convention for C and encourage other programming languages to adopt it for interoperability. Go doesn't follow these conventions, and instead uses its own idiosyncratic [calling convention](https://dr-knz.net/go-calling-convention-x86-64.html). Future versions of Go (1.17?) will adopt a more traditional [register-based](https://go.googlesource.com/proposal/+/refs/changes/78/248178/1/design/40724-register-calling.md) convention that will improve performance . However compatibility with platform conventions is not planned as it would negatively impact goroutine scalability.
 
 Even today, Go's stack layout is slightly different on different platforms. To keep things manageable, we'll assume that we're on `x86-64` for the remainder of this note.
 
@@ -42,7 +42,7 @@ Now let's take a closer look at the stack. Every goroutine has its own stack tha
 
 There is a lot going on in the picture above, but for now let's focus on the things highlighted in red. To get a stack trace, the first thing we need is the current program counter (pc) which identifies the function that is currently being executed. This is found in a CPU register called `rip` (instruction pointer register) that points to another region of memory that holds the executable machine code of our program. If you're not familiar with registers, you can think of them as special CPU variables that are incredibly fast to access.
 
-The next step is to find the program counters of all the callers of the current function, i.e. all the `return address (pc)` values that are also highlighted in red. There are various techniques for doing, which are described in the [Unwinding](#unwinding) section. The end result is a list of program counters that represent your stack trace. In fact, it's exactly the same list you can get from [`runtime.Callers()`](https://golang.org/pkg/runtime/#Callers) within your program. Last but not least, these `pc` values are translated into human readable file/line/function names as described in the [Symbolization](#symbolization) section below.
+The next step is to find the program counters of all the callers of the current function, i.e. all the `return address (pc)` values that are also highlighted in red. There are various techniques for doing this, which are described in the [Unwinding](#unwinding) section. The end result is a list of program counters that represent a stack trace. In fact, it's exactly the same list you can get from [`runtime.Callers()`](https://golang.org/pkg/runtime/#Callers) within your program. Last but not least, these `pc` values are translated into human readable file/line/function names as described in the [Symbolization](#symbolization) section below.
 
 ### Real Example
 
@@ -54,7 +54,7 @@ To take a look at the stack, we'll use [delve](https://github.com/go-delve/delve
 $ dlv debug ./examples/stackannotate/main.go 
 Type 'help' for list of commands.
 (dlv) source delve/stackannotate.star
-(dlv) c examples/stackannotate/main.go:19
+(dlv) continue examples/stackannotate/main.go:19
 Breakpoint 1 set at 0x1067d94 for main.bar() ./examples/stackannotate/main.go:19
 > main.bar() ./examples/stackannotate/main.go:19 (hits goroutine(1):1 total:1) (PC: 0x1067d94)
     14:	}
@@ -66,7 +66,7 @@ Breakpoint 1 set at 0x1067d94 for main.bar() ./examples/stackannotate/main.go:19
     20:		}
     21:		return s
     22:	}
-(dlv) sa
+(dlv) stackannotate
 regs    addr        offset  value               explanation                     
         c00004c7e8       0                   0  ?                               
         c00004c7e0      -8                   0  ?                               
@@ -108,9 +108,62 @@ If you want to try it out yourself, perhaps modify the example program to spawn 
 
 ## Unwinding
 
-### Frame Pointers
+Unwinding (or stack walking) is the process of collecting all the return addresses (see red elements in [Stack Layout](#stack-layout)) from the stack. Together with the current instruction pointer register (`rip`) they form a list of program counter (pc) values that represent a stack trace.
 
-To be written ...
+Conceptually unwinding can be seen as a separate step from [Symbolization](#symbolization), however in practice implementations often intertwine the two.
+
+The Go runtime, including the builtin profilers, exclusively use  [.gopclntab](#gopclntab) for unwinding. However, we'll start with describing [Frame Pointer](#frame-pointer) unwinding first, because it's a much easier technique to understand.
+
+### Frame Pointer
+
+Frame pointer unwinding is the simple process of following the base pointer register (`rbp`) to the first frame pointer on the stack which points to the next frame pointer and so on. In other words, it is following the orange lines in the [Stack Layout](#stack-layout) graphic. For each visited frame pointer, the return address (pc) sits 8 bytes above the frame pointer address.
+
+Go only started to include frame pointers on the stack by default since [Go 1.7](https://golang.org/doc/go1.7), and only does so for [64bit binaries](https://sourcegraph.com/search?q=framepointer_enabled+repo:%5Egithub%5C.com/golang/go%24+&patternType=literal). Even so that might cover the platforms most of us care about, it forces the Go runtime and builtin profilers to use a more complicated unwinding approach outlined in [.gopclntab](#gopclntab) that works on all supported platforms.
+
+However, this doesn't mean the frame pointers are useless. 3rd party debuggers and profilers (e.g. [perf](http://www.brendangregg.com/perf.html)) do not understand Go's idiosyncratic unwinding tables, so they rely on frame pointers (and/or [DWARF](#dwarf)) for getting stack traces. 
+
+
+
+
+
+https://github.com/felixge/gounwind/blob/main/gounwind.go
+
+> Always compile with frame pointers. Omitting frame pointers is an evil compiler optimization that breaks debuggers, and sadly, is often the default.
+> – [Brendan Gregg](http://www.brendangregg.com/perf.html)
+
+
+
+> An unwinder that is several hundred lines long is simply not even *remotely* interesting to me.
+> – [Linus Torvalds](https://lkml.org/lkml/2012/2/10/356)
+
+> ... so as long as the Go compiler emits valid DWARF symbols, then anything is possible. Erm, by "anything" I mean, specificially, "unwinding". Many things are still not possible, even with DWARF (and more frequently than you might think, many things are not possible precisely because DWARF exists-- true love, for instance)
+> – [David Sanchez](https://www.linkedin.com/in/david-sanchez-34289130/) (my colleague, who knows more about DWARF than any sane person probably should)
+
+
+
+https://github.com/felixge/gounwind
+
+
+
+
+
+For debuggers and profiling tools (not just in Go), frame pointer unwinding is the most universal, simplest, fastest and most reliable ways to get stack traces utilized 
+
+
+
+ Some compilers offer options such as `-fomit-frame-pointers` to d
+
+In order to support 3rd party profiling tools such as [perf](http://www.brendangregg.com/perf.html), Go started to include frame pointers in every stack frame of  since . 
+
+
+
+
+
+ [.gopclntab](##gopclntab) for 
+
+
+
+In fact, [until recently](https://lwn.net/Articles/727553/), the Linux Kernel rejected anything other than frame pointers for stack unwinding despite causing up to 5-10% slowdown for some workloads. Go reported the overhead as 2% in the Go 1.7 release notes.
 
 ### .gopclntab
 
@@ -120,6 +173,8 @@ To be written ...
 
 To be written ...
 
+### ORC, LBR, etc.
+
 ## Symbolization
 
 To be written ...
@@ -128,9 +183,13 @@ To be written ...
 
 To be written ...
 
+- Frame Pointers: 2% for Go, Linux 5-10%
+
 ## Accuracy
 
 To be written ...
+
+### Function Inlining
 
 ### Frame Pointer Race Condition
 
@@ -147,6 +206,12 @@ To be written ...
 ### pprof Labels
 
 To be written ...
+
+## History
+
+In order to support 3rd profilers such as [perf](http://www.brendangregg.com/perf.html) the  [Go 1.7](https://golang.org/doc/go1.7) (2016-08-15) release started to enable frame pointers by default for [64bit binaries](https://sourcegraph.com/search?q=framepointer_enabled+repo:%5Egithub%5C.com/golang/go%24+&patternType=literal).
+
+
 
 ## Disclaimers
 
