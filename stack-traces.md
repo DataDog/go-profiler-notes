@@ -1,3 +1,5 @@
+🚧 This note is still work in progress, please come back later! 🚧
+
 This document was last updated for `go1.16` but probably still applies to older/newer versions for the most parts.
 
 # Stack Traces in Go
