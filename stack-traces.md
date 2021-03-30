@@ -125,9 +125,13 @@ The main downside to frame pointers is that they add some performance overhead t
 
 Despite this Go used to omit frame pointers which caused interoperability issues with third party debuggers and profilers such as [Linux perf](http://www.brendangregg.com/perf.html). Fortunately the Go developers recognized the issue and since [Go 1.7](https://golang.org/doc/go1.7) frame pointers are always included for [64bit binaries ](https://sourcegraph.com/search?q=framepointer_enabled+repo:%5Egithub%5C.com/golang/go%24+&patternType=literal). And unlike `gcc`, the Go compiler offers no option to disable frame pointers, which is a good thing in my opinion.
 
-Anyway, if all of this is too abstract for you, and you'd like to see some code, [here](https://github.com/felixge/gounwind/blob/5cc8505361807a22169595999689bd793ed6d391/gounwind.go) is an alternative `runtime.Callers()` implementation that uses frame pointer unwinding instead of [.gopclntab](#gopclntab). The simplicity should speak for itself when compared to the alternative methods described below.
+Anyway, if all of this is too abstract for you, and you'd like to see some code, [here](https://github.com/felixge/gounwind/blob/5cc8505361807a22169595999689bd793ed6d391/gounwind.go) is an alternative `runtime.Callers()` implementation that uses frame pointer unwinding instead of [.gopclntab](#gopclntab). The simplicity should speak for itself when compared to the alternative methods described below. It should also be clear that frame pointer unwinding has `O(N)` time complexity where `N` is the number of stack frames that need to be traversed.
 
 ### .gopclntab
+
+Since frame pointers are only available on 64bit platforms, Go has to use a more complicated approach to enable stack tracing in a cross-platform manner [for now](https://github.com/golang/go/issues/16638). The nitty-gritty of this has been described by Russ Cox in his [Go 1.2 Runtime Symbol Information](https://golang.org/s/go12symtab) document, but I'll try to summarize the key idea.
+
+Simply speaking, the idea is to take the current program count (pc) of a goroutine and look it up in the sorted `<pc, func>` table in the `.gopclntab` section embedded in the binary. If you want, you can get access to this table using the [debug/elf](./examples/pclnttab/linux.go) or ([debug/macho](./examples/pclnttab/darwin.go)) package yourself. 
 
 ### DWARF
 
