@@ -43,7 +43,7 @@ The operations above are a subset of the [waiting states](https://github.com/gol
 - [`time.Sleep`](https://golang.org/pkg/time/#Sleep) (but [`time.After`](https://golang.org/pkg/time/#After), [`time.Tick`](https://golang.org/pkg/time/#Tick) and other channel based wrappers will show up)
 - GC
 - Syscalls (e.g. [Network I/O](./examples/block-net/), File I/O, etc.)
-- Internal Locks (e.g. for [stopTheWorld](https://github.com/golang/go/blob/go1.15.7/src/runtime/proc.go#L900))
+- Runtime Internal Locks (e.g. for [stopTheWorld](https://github.com/golang/go/blob/go1.15.7/src/runtime/proc.go#L900))
 - Blocking in [cgo](https://golang.org/cmd/cgo/) calls
 - Events that block forever (e.g. sending/receiving on nil channels)
 
