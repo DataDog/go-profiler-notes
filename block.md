@@ -46,7 +46,7 @@ The operations above are a subset of the [waiting states](https://github.com/gol
 - Runtime Internal Locks (e.g. for [stopTheWorld](https://github.com/golang/go/blob/go1.15.7/src/runtime/proc.go#L900))
 - Blocking in [cgo](https://golang.org/cmd/cgo/) calls
 - Events that block forever (e.g. sending/receiving on nil channels)
-- Blocking events that have not completed yet.
+- Blocking events that have not completed yet
 
 In some cases [Goroutine Profiling](./goroutine.md) (debug=2) can be a good alternative to block profiling since it covers all waiting states and can show ongoing blocking events that have not yet completed.
 
