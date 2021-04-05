@@ -48,7 +48,7 @@ func debugSymtab(gopclntab []byte) error {
 
 	for _, pc := range callers() {
 		file, line, fn := table.PCToLine(uint64(pc))
-		fmt.Printf("%s() %s:%d\n", fn.Name, file, line)
+		fmt.Printf("%x: %s() %s:%d\n", pc, fn.Name, file, line)
 	}
 	return nil
 }
