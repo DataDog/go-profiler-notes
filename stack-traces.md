@@ -110,6 +110,12 @@ The script isn't perfect and there are some addresses on the stack that it's una
 
 If you want to try it out yourself, perhaps modify the example program to spawn `main.foo()` as a goroutine and observe how that impacts the stack.
 
+### cgo
+
+Go's stack implementation described above is making an important tradeoff when it comes to interacting with code written in languages that follow platform calling conventions such as C. Instead of being able to directly call such functions directly, Go has to perform [complicated rituals](https://golang.org/src/runtime/cgocall.go) for switching between goroutine stacks and OS-allocated stacks that can run C code. This comes with a certain amount of performance overhead and also poses complex issues for capturing stack traces during profiling.
+
+🚧 I'll try to describe this in more detail in the future.
+
 ## Unwinding
 
 Unwinding (or stack walking) is the process of collecting all the return addresses (see red elements in [Stack Layout](#stack-layout)) from the stack. Together with the current instruction pointer register (`rip`) they form a list of program counter (`pc`) values that can be turned into a human readable stack trace via [Symbolization](#symbolization).
