@@ -61,14 +61,6 @@ func BenchmarkFunctionSize(b *testing.B) {
 			})
 		})
 	}
-
-	//b.Run("long", func(b *testing.B) {
-	//long(func() {
-	//for i := 0; i < b.N; i++ {
-	//runtime.Callers(0, callers)
-	//}
-	//})
-	//})
 }
 
 // dostuff is supposed to generate a bunch of machine code that will hopefully
