@@ -41,7 +41,7 @@ The various ways one can record CPU profiles in Go are listed below.
    go tool pprof -http=:6061 benchmark.cpu.pb.gz
    ```
 
-2. The [net/http/pprof](net/http/pprof) allows you to setup http endpoints that can start/stop the CPU profiler via http requests on-demand and return the resulting pprof data file. You can directly pass a URL to such an endpoint to the pprof tool.
+2. The [net/http/pprof](https://golang.org/pkg/net/http/pprof/) allows you to setup http endpoints that can start/stop the CPU profiler via http requests on-demand and return the resulting pprof data file. You can directly pass a URL to such an endpoint to the pprof tool.
 
    ```
    go tool pprof -http=:6061 http://localhost:6060/debug/pprof/profile?seconds=30

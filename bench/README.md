@@ -16,7 +16,7 @@ go run . \
 
 The benchmark works by spawning a new child process for the given number of `-runs` and every unique combination of parameters. The child reports the results to the parent process which then combines all the results in a CSV file. The hope is that using a new child process for every config/run eliminates scheduler, GC and other runtime state building up as a source of errors.
 
-Workloads are defined in the [workloads.go](./workloads.go) file. For now the workloads are designed to be **pathological**, i.e. they try to show the worst performance impact the profiler might have on applications that are not doing anything useful other than stressing the profiler. The numbers are not intended to scare you away from profiling in production, but to guide you towards universally **safe profiling rates** as a starting point.
+Workloads are defined in the [workloads_chan.go](./workload_chan.go) and [workloads_mutex.go](./workload_mutex.go) files. For now the workloads are designed to be **pathological**, i.e. they try to show the worst performance impact the profiler might have on applications that are not doing anything useful other than stressing the profiler. The numbers are not intended to scare you away from profiling in production, but to guide you towards universally **safe profiling rates** as a starting point.
 
 The CSV files are visualized using the [analysis.ipynb](./analysis.ipynb) notebook that's included in this directory.
 
