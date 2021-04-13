@@ -159,6 +159,8 @@ The [original pprof tool](https://github.com/gperftools/gperftools/blob/master/s
 
 In 2014 the Go project [replaced](https://github.com/golang/go/commit/8b5221a57b41a19abcb4e3dde20014af494048c2) the perl based version of the pprof tool with a Go implementation by [Raul Silvera](https://www.linkedin.com/in/raul-silvera-a0521b55/) that was already used inside of Google at this point. This implementation was re-released as a [standalone project](https://github.com/google/pprof) in 2016. Since then the Go project has been vendoring a copy of the upstream project, [updating](https://github.com/golang/go/commits/master/src/cmd/vendor/github.com/google/pprof) it on a regular basis.
 
+Go 1.9 (2017-08-24) added support for pprof labels. It also started including symbol information into pprof files by default, which allows viewing profiles without having access to the binary.
+
 ## Todo
 
 - Write more about using `go tool pprof` itself.
