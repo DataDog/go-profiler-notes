@@ -36,7 +36,7 @@ Below are a few tools for decoding pprof files into human readable text output. 
 
 #### Using `pprofutils`
 
-[pprofutils](https://github.com/felixge/pprofutils) is a small tool I build for converting between pprof files and Brendan Gregg's [folded text](https://github.com/brendangregg/FlameGraph#2-fold-stacks) format. You can use it like this:
+[pprofutils](https://github.com/felixge/pprofutils) is a small tool for converting between pprof files and Brendan Gregg's [folded text](https://github.com/brendangregg/FlameGraph#2-fold-stacks) format. You can use it like this:
 
 ```
 $ pprof2text < examples/cpu/pprof.samples.cpu.001.pb.gz
