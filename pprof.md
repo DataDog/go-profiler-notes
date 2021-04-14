@@ -32,11 +32,27 @@ The code for generating pprof output in Go can be found in: [runtime/pprof/proto
 
 ### Decoding
 
+Below are a few tools for decoding pprof files into human readable text output. They are ordered by the complexity of their output format, with tools showing simplified output being listed first:
+
+#### Using `pprofutils`
+
+[pprofutils](https://github.com/felixge/pprofutils) is a small tool I build for converting between pprof files and Brendan Gregg's [folded text](https://github.com/brendangregg/FlameGraph#2-fold-stacks) format. You can use it like this:
+
+```
+$ pprof2text < examples/cpu/pprof.samples.cpu.001.pb.gz
+
+golang.org/x/sync/errgroup.(*Group).Go.func1;main.run.func2;main.computeSum 19
+golang.org/x/sync/errgroup.(*Group).Go.func1;main.run.func2;main.computeSum;runtime.asyncPreempt 5
+runtime.mcall;runtime.gopreempt_m;runtime.goschedImpl;runtime.schedule;runtime.findrunnable;runtime.stopm;runtime.notesleep;runtime.semasleep;runtime.pthread_cond_wait 1
+runtime.mcall;runtime.park_m;runtime.schedule;runtime.findrunnable;runtime.checkTimers;runtime.nanotime;runtime.nanotime1 1
+runtime.mcall;runtime.park_m;runtime.schedule;runtime.findrunnable;runtime.stopm;runtime.notesleep;runtime.semasleep;runtime.pthread_cond_wait 2
+runtime.mcall;runtime.park_m;runtime.resetForSleep;runtime.resettimer;runtime.modtimer;runtime.wakeNetPoller;runtime.netpollBreak;runtime.write;runtime.write1 7
+runtime.mstart;runtime.mstart1;runtime.sysmon;runtime.usleep 3
+```
+
 #### Using `go tool pprof`
 
-The easiest way to decode a pprof file and see its contents is to use  `go tool pprof -raw`. The output is formatted for human readability, so arguabiliy it's not as  `-raw` as the `protoc` output shown later on.
-
-Let's have a look at the [examples/cpu/pprof.samples.cpu.001.pb.gz](./examples/cpu/pprof.samples.cpu.001.pb.gz) CPU profile included in this repository:
+`pprof` itself has an output mode called `-raw` that will show you the contents of a pprof file. However, it should be noted that this is not as `-raw` as it gets, checkout `protoc` below for that:
 
 ```
 $ go tool pprof -raw examples/cpu/pprof.samples.cpu.001.pb.gz
