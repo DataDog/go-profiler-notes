@@ -1,0 +1,13 @@
+goroutine 1 [running]:
+runtime/pprof.writeGoroutineStacks(0x111e660, 0xc0000a0018, 0x30, 0x12b3aa8)
+	/usr/local/Cellar/go/1.15.7_1/libexec/src/runtime/pprof/pprof.go:693 +0x9f
+runtime/pprof.writeGoroutine(0x111e660, 0xc0000a0018, 0x2, 0x0, 0x602e6537)
+	/usr/local/Cellar/go/1.15.7_1/libexec/src/runtime/pprof/pprof.go:682 +0x45
+runtime/pprof.(*Profile).WriteTo(0x11ae4e0, 0x111e660, 0xc0000a0018, 0x2, 0xc0000a0020, 0x0)
+	/usr/local/Cellar/go/1.15.7_1/libexec/src/runtime/pprof/pprof.go:331 +0x3f2
+main.bar()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/frame-order/main.go:19 +0xd5
+main.foo(...)
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/frame-order/main.go:13
+main.main()
+	/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/frame-order/main.go:9 +0x25
