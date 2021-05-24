@@ -1,0 +1,71 @@
+(dlv) disassemble -l main.main
+TEXT main.main(SB) /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/presentation/main.go
+	main.go:7	0x10a46a0	65488b0c2530000000	mov rcx, qword ptr gs:[0x30]
+	main.go:7	0x10a46a9	483b6110		cmp rsp, qword ptr [rcx+0x10]
+	main.go:7	0x10a46ad	7624			jbe 0x10a46d3
+	main.go:7	0x10a46af	4883ec08		sub rsp, 0x8
+	main.go:7	0x10a46b3	48892c24		mov qword ptr [rsp], rbp
+	main.go:7	0x10a46b7	488d2c24		lea rbp, ptr [rsp]
+	main.go:8	0x10a46bb	0f1f440000		nop dword ptr [rax+rax*1], eax
+	main.go:8	0x10a46c0	e81b000000		call $main.foo
+	main.go:9	0x10a46c5	e8b6000000		call $main.foobar
+	main.go:10	0x10a46ca	488b2c24		mov rbp, qword ptr [rsp]
+	main.go:10	0x10a46ce	4883c408		add rsp, 0x8
+	main.go:10	0x10a46d2	c3			ret
+	main.go:7	0x10a46d3	e8a8ddfbff		call $runtime.morestack_noctxt
+	.:0		0x10a46d8	ebc6			jmp $main.main
+(dlv) disassemble -l main.foo
+TEXT main.foo(SB) /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/presentation/main.go
+	main.go:12	0x10a46e0	65488b0c2530000000	mov rcx, qword ptr gs:[0x30]
+	main.go:12	0x10a46e9	483b6110		cmp rsp, qword ptr [rcx+0x10]
+	main.go:12	0x10a46ed	761f			jbe 0x10a470e
+	main.go:12	0x10a46ef	4883ec08		sub rsp, 0x8
+	main.go:12	0x10a46f3	48892c24		mov qword ptr [rsp], rbp
+	main.go:12	0x10a46f7	488d2c24		lea rbp, ptr [rsp]
+	main.go:13	0x10a46fb	0f1f440000		nop dword ptr [rax+rax*1], eax
+	main.go:13	0x10a4700	e81b000000		call $main.bar
+	main.go:14	0x10a4705	488b2c24		mov rbp, qword ptr [rsp]
+	main.go:14	0x10a4709	4883c408		add rsp, 0x8
+	main.go:14	0x10a470d	c3			ret
+	main.go:12	0x10a470e	e86dddfbff		call $runtime.morestack_noctxt
+	.:0		0x10a4713	ebcb			jmp $main.foo
+(dlv) disassemble -l main.bar
+TEXT main.bar(SB) /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/presentation/main.go
+	main.go:16	0x10a4720	65488b0c2530000000	mov rcx, qword ptr gs:[0x30]
+	main.go:16	0x10a4729	483b6110		cmp rsp, qword ptr [rcx+0x10]
+	main.go:16	0x10a472d	7642			jbe 0x10a4771
+	main.go:16	0x10a472f	4883ec48		sub rsp, 0x48
+	main.go:16	0x10a4733	48896c2440		mov qword ptr [rsp+0x40], rbp
+	main.go:16	0x10a4738	488d6c2440		lea rbp, ptr [rsp+0x40]
+	main.go:17	0x10a473d	488d05235c0200		lea rax, ptr [rip+0x25c23]
+	main.go:17	0x10a4744	48890424		mov qword ptr [rsp], rax
+	main.go:17	0x10a4748	48c74424080f000000	mov qword ptr [rsp+0x8], 0xf
+	main.go:17	0x10a4751	0f57c0			xorps xmm0, xmm0
+	main.go:17	0x10a4754	0f11442410		movups xmmword ptr [rsp+0x10], xmm0
+	main.go:17	0x10a4759	48c744242000000000	mov qword ptr [rsp+0x20], 0x0
+	main.go:17	0x10a4762	e8b982ffff		call $fmt.Printf
+	main.go:18	0x10a4767	488b6c2440		mov rbp, qword ptr [rsp+0x40]
+	main.go:18	0x10a476c	4883c448		add rsp, 0x48
+	main.go:18	0x10a4770	c3			ret
+	main.go:16	0x10a4771	e80addfbff		call $runtime.morestack_noctxt
+	.:0		0x10a4776	eba8			jmp $main.bar
+(dlv) disassemble -l main.foobar
+TEXT main.foobar(SB) /Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/examples/presentation/main.go
+	main.go:20	0x10a4780	65488b0c2530000000	mov rcx, qword ptr gs:[0x30]
+	main.go:20	0x10a4789	483b6110		cmp rsp, qword ptr [rcx+0x10]
+	main.go:20	0x10a478d	7642			jbe 0x10a47d1
+	main.go:20	0x10a478f	4883ec48		sub rsp, 0x48
+	main.go:20	0x10a4793	48896c2440		mov qword ptr [rsp+0x40], rbp
+	main.go:20	0x10a4798	488d6c2440		lea rbp, ptr [rsp+0x40]
+	main.go:21	0x10a479d	488d05ed630200		lea rax, ptr [rip+0x263ed]
+	main.go:21	0x10a47a4	48890424		mov qword ptr [rsp], rax
+	main.go:21	0x10a47a8	48c744240812000000	mov qword ptr [rsp+0x8], 0x12
+	main.go:21	0x10a47b1	0f57c0			xorps xmm0, xmm0
+	main.go:21	0x10a47b4	0f11442410		movups xmmword ptr [rsp+0x10], xmm0
+	main.go:21	0x10a47b9	48c744242000000000	mov qword ptr [rsp+0x20], 0x0
+	main.go:21	0x10a47c2	e85982ffff		call $fmt.Printf
+	main.go:22	0x10a47c7	488b6c2440		mov rbp, qword ptr [rsp+0x40]
+	main.go:22	0x10a47cc	4883c448		add rsp, 0x48
+	main.go:22	0x10a47d0	c3			ret
+	main.go:20	0x10a47d1	e8aadcfbff		call $runtime.morestack_noctxt
+	.:0		0x10a47d6	eba8			jmp $main.foobar

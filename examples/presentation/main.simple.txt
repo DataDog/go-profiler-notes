@@ -1,0 +1,63 @@
+0x10a46a0	mov rcx, qword ptr gs:[0x30]
+0x10a46a9	cmp rsp, qword ptr [rcx+0x10]
+0x10a46ad	jbe 0x10a46d3
+0x10a46af	sub rsp, 0x8
+0x10a46b3	mov qword ptr [rsp], rbp
+0x10a46b7	lea rbp, ptr [rsp]
+0x10a46bb	nop dword ptr [rax+rax*1], eax
+0x10a46c0	call $main.foo
+0x10a46c5	call $main.foobar
+0x10a46ca	mov rbp, qword ptr [rsp]
+0x10a46ce	add rsp, 0x8
+0x10a46d2	ret
+0x10a46d3	call $runtime.morestack_noctxt
+0x10a46d8	jmp $main.main
+0x10a46e0	mov rcx, qword ptr gs:[0x30]
+0x10a46e9	cmp rsp, qword ptr [rcx+0x10]
+0x10a46ed	jbe 0x10a470e
+0x10a46ef	sub rsp, 0x8
+0x10a46f3	mov qword ptr [rsp], rbp
+0x10a46f7	lea rbp, ptr [rsp]
+0x10a46fb	nop dword ptr [rax+rax*1], eax
+0x10a4700	call $main.bar
+0x10a4705	mov rbp, qword ptr [rsp]
+0x10a4709	add rsp, 0x8
+0x10a470d	ret
+0x10a470e	call $runtime.morestack_noctxt
+0x10a4713	jmp $main.foo
+0x10a4720	mov rcx, qword ptr gs:[0x30]
+0x10a4729	cmp rsp, qword ptr [rcx+0x10]
+0x10a472d	jbe 0x10a4771
+0x10a472f	sub rsp, 0x48
+0x10a4733	mov qword ptr [rsp+0x40], rbp
+0x10a4738	lea rbp, ptr [rsp+0x40]
+0x10a473d	lea rax, ptr [rip+0x25c23]
+0x10a4744	mov qword ptr [rsp], rax
+0x10a4748	mov qword ptr [rsp+0x8], 0xf
+0x10a4751	xorps xmm0, xmm0
+0x10a4754	movups xmmword ptr [rsp+0x10], xmm0
+0x10a4759	mov qword ptr [rsp+0x20], 0x0
+0x10a4762	call $fmt.Printf
+0x10a4767	mov rbp, qword ptr [rsp+0x40]
+0x10a476c	add rsp, 0x48
+0x10a4770	ret
+0x10a4771	call $runtime.morestack_noctxt
+0x10a4776	jmp $main.bar
+0x10a4780	mov rcx, qword ptr gs:[0x30]
+0x10a4789	cmp rsp, qword ptr [rcx+0x10]
+0x10a478d	jbe 0x10a47d1
+0x10a478f	sub rsp, 0x48
+0x10a4793	mov qword ptr [rsp+0x40], rbp
+0x10a4798	lea rbp, ptr [rsp+0x40]
+0x10a479d	lea rax, ptr [rip+0x263ed]
+0x10a47a4	mov qword ptr [rsp], rax
+0x10a47a8	mov qword ptr [rsp+0x8], 0x12
+0x10a47b1	xorps xmm0, xmm0
+0x10a47b4	movups xmmword ptr [rsp+0x10], xmm0
+0x10a47b9	mov qword ptr [rsp+0x20], 0x0
+0x10a47c2	call $fmt.Printf
+0x10a47c7	mov rbp, qword ptr [rsp+0x40]
+0x10a47cc	add rsp, 0x48
+0x10a47d0	ret
+0x10a47d1	call $runtime.morestack_noctxt
+0x10a47d6	jmp $main.foobar

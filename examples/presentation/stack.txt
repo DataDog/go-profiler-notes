@@ -1,0 +1,9 @@
+panic: oh no
+
+goroutine 1 [running]:
+main.bar(...)
+	/go/src/presentation/main.go:18
+main.foo()
+	/go/src/presentation/main.go:13 +0x85
+main.main()
+	/go/src/presentation/main.go:8 +0x25
