@@ -1,3 +1,5 @@
+⬅ [Index of all go-profiler-notes](./README.md)
+
 # Go's pprof tool & format
 
 The various profilers built into Go are designed to work with the pprof visualization tool. [pprof](https://github.com/google/pprof) itself is an inofficial Google project that is designed to analyze profiling data from C++, Java and Go programs. The project defines a protocol buffer format that is used by all Go profilers and described in this document.

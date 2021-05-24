@@ -1,3 +1,5 @@
+⬅ [Index of all go-profiler-notes](./README.md)
+
 This document was last updated for `go1.15.6` but probably still applies to older/newer versions for the most parts.
 
 # Goroutine Profiling in Go
