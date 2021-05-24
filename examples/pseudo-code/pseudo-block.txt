@@ -1,0 +1,17 @@
+func chansend(channel, msg):
+  // non-blocking send
+  if ready(channel):
+    send(channel, msg)
+    return
+
+  t0 = now()
+  // let scheduler run another goroutine
+  // until the channel is ready
+  wait_ready(channel)
+  duration = now() - t0
+  send(channel, msg)
+  // sample a fraction of blocking events
+  if random_sample(duration):
+    s = stacktrace()
+    profile[s].count++
+    profile[s].duration += duration

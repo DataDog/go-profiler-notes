@@ -1,0 +1,20 @@
+func malloc(size):
+  object = ... // alloc magic
+
+  if random_sample():
+    s = stacktrace()
+    profile[s].allocs++
+    profile[s].alloc_bytes += sizeof(object)
+    track_profiled(object, s)
+
+  return object
+
+func sweep(object):
+  // do gc stuff to free object
+
+  if is_profiled(object)
+    s = alloc_stacktrace(object)
+    profile[s].frees++
+    profile[s].free_bytes += sizeof(object)
+
+  return object
