@@ -1,3 +1,5 @@
+⬅ [Index of all go-profiler-notes](./README.md)
+
 [Introduction](#intrudction) - [Goroutine Stack](#goroutine-stack) ([Stack Layout](#stack-layout), [Real Example](#real-example), [cgo](#cgo)) - [Unwinding](#unwinding) ([Frame Pointer](#frame-pointer), [gopclntab](#gopclntab), [DWARF](#dwarf)) - [Symbolization](#symbolization)
 
 This document was last updated for `go1.16` but probably still applies to older/newer versions for the most parts.
