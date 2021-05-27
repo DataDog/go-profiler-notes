@@ -29,6 +29,10 @@ I found that Go has a lot of profilers and there are many tools for looking at t
 
 Got great links to recommend? Open an issue or PR, I'd happy to add your suggestions : ).
 
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/DataDog/go-profiler-notes.svg)](https://starchart.cc/DataDog/go-profiler-notes)
+
 ## License
 
 The markdown files in this repository are licensed under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).
