@@ -38,11 +38,11 @@ Given this scenario, the `blockprofiler` is guaranteed to catch and accurately r
 
 For an even better intuition about this, consider the [simulated example](./sim/block_sampling.ipynb) below. Here we have a histogram of all durations collected from 3 types of blocking events. As you can see, they all have different mean durations (`1000ns`, `2000ns`, `3000ns`) and they are occurring at different frequencies, with `count(a) > count(b) > count(c)`. What's more difficult to see, is that the cumulative durations of these events are the same, i.e. `sum(a) = sum(b) = sum(c)`, but you can trust me on that : ).
 
-<img src="/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/sim/block_sampling_hist.png" style="zoom: 80%;" />
+<img src="./sim/block_sampling_hist.png" style="zoom: 80%;" />
 
 So given that your application might produce events like this, how will they show up in your block profile as you try out different `blockprofilerate` values? As you can see below, all is well and fine until a `blockprofilerate` of `1000ns`. Each event shows up with the same total duration in the profile (the red and green dots are hidden below the blue ones). However starting at `1000ns` you see that event `a` starts to fade from our profile and at `2000ns` you'd already think that events `b` and `c` are causing twice as much blocking time as event `a`.
 
-<img src="/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/sim/block_sampling_biased.png" style="zoom:80%;" />
+<img src="./sim/block_sampling_biased.png" style="zoom:80%;" />
 
 So what can we do? Do we always need to live in fear of bias when working with block profiles? No! If the [Overhead](#overhead) for your workload allows it, the simplest solution is to use a low enough `blockprofilerate` in order to capture most blocking events.
 
@@ -55,7 +55,7 @@ duration = duration * (rate/duration)
 
 Doing so could be done with a [trivial patch](https://github.com/felixge/go/compare/master...debias-blockprofile-rate) to the go runtime and the picture below shows the results from simulating it.
 
-<img src="/Users/felix.geisendoerfer/go/src/github.com/felixge/go-profiler-notes/sim/block_sampling_debiased.png" alt="" style="zoom: 80%;" />
+<img src="./sim/block_sampling_debiased.png" alt="" style="zoom: 80%;" />
 
 ## Disclaimers
 
