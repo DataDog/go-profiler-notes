@@ -20,7 +20,7 @@ I found that Go has a lot of profilers and there are many tools for looking at t
   - [runtime/pprof](https://golang.org/pkg/runtime/pprof/#Profile): Lists the available profiles and has a little more explanation about what kind of data they produce.
   - [runtime](https://golang.org/pkg/runtime/): Has documentation on the various control knobs and pprof facilities, e.g. `MemProfileRate`.
   - [net/http/pprof](https://golang.org/src/net/http/pprof/pprof.go): Not a lot of docs, but diving into the code from there shows how the various profilers can be started/stopped on demand.
-- JDB
+- JBD
   - [Profiler labels in Go](https://rakyll.org/profiler-labels/): An introduction to using pprof labels and how they allow you to add additional context to your profiles.
   - [Custom pprof profiles](https://rakyll.org/custom-profiles/): Example for using custom profiles, shows tracking open/close events of a blob store and how to figure out how many blobs are open at a given time.
   - [Mutex profile](https://rakyll.org/mutexprofile/): Brief intro to the mutex profile.
