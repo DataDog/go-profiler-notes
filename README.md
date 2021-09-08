@@ -4,6 +4,7 @@ Hey there 👋🏻, I'm [felixge](https://github.com/felixge) and I've just star
 
 I found that Go has a lot of profilers and there are many tools for looking at the data, but that there is very little information on what any of it means. So in order to make sure that I know what I'm talking about, I've started to research the existing profilers and how they work. This repository is my attempt to summarize my findings in the hope that it might be useful to others.
 
+- [The Busy Developers's Guide to Go Profiling, Tracing and Observability](./guide/README.md)
 - [pprof tool & format](./pprof.md): Describes the pprof tool and the binary data format for storing profiles.
 - [Stack Traces](./stack-traces.md): An in-depth look at stack traces in Go which are a load bearing subsystem for profiling.
 - [Goroutine Profiling](./goroutine.md): Allows you to get a list of all active goroutines and what they're currently doing.
