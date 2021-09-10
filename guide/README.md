@@ -120,7 +120,7 @@ Go solves this problem using its built-in garbage collector. The details of its 
 
 Performing GC involves a lot of expensive graph traversal and cache thrashing. It even requires regular stop-the-world phases that halt the execution of your entire program. Luckily recent versions of Go have gotten this down to fractions of a millisecond, but much of the remaining overhead is inherent to any GC. In fact, it's not uncommon that 20-30% of a Go program's execution are spend on memory management.
 
-Generally speaking the costs of GC is proportional to the amount of heap allocations your program performs. So when it comes to optimizing the memory related overhead of your program, the mantra is:
+Generally speaking the cost of GC is proportional to the amount of heap allocations your program performs. So when it comes to optimizing the memory related overhead of your program, the mantra is:
 
 - **Reduce**: Try to to turn heap allocations into stack allocations or avoid them alltogether.
 - **Reuse:** Reuse heap allocations rather than replacing them with new ones.
