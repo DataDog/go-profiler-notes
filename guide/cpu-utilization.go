@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	pprof.StartCPUProfile(os.Stdout)
+	file, _ := os.Create("./cpu-utilization.pprof")
+	pprof.StartCPUProfile(file)
 	defer pprof.StopCPUProfile()
 
 	go cpuHog()
