@@ -141,6 +141,14 @@ You can enable the CPU profiler via various APIs:
 - [`pprof.StartCPUProfile(w)`](https://pkg.go.dev/runtime/pprof#StartCPUProfile) will capture a CPU profile to `w` that covers the time span until [`pprof.StopCPUProfile()`](https://pkg.go.dev/runtime/pprof#StopCPUProfile) is called.
 - [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s CPU profile by hitting the `GET /debug/pprof/profile?seconds=30` of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`.
 
+If you need a quick snippet to paste into your `main()` function, you can use the code below:
+
+```go
+file, _ := os.Create("./cpu.pprof")
+pprof.StartCPUProfile(file)
+defer pprof.StopCPUProfile()
+```
+
 Regardless of how you activate the CPU profiler, the resulting profile will be a frequency table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
 
 |stack trace|samples/count|cpu/nanoseconds|
