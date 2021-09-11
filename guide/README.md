@@ -151,7 +151,7 @@ pprof.StartCPUProfile(file)
 defer pprof.StopCPUProfile()
 ```
 
-Regardless of how you activate the CPU profiler, the resulting profile will be a frequency table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
+Regardless of how you activate the CPU profiler, the resulting profile will essentially be a table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
 
 |stack trace|samples/count|cpu/nanoseconds|
 |-|-|-|
@@ -239,10 +239,10 @@ If you need a quick snippet to paste into your `main()` function, you can use th
 
 ```go
 file, _ := os.Create("./mem.pprof")
-pprof.Lookup("heap").WriteTo(file, 0)
+defer pprof.Lookup("heap").WriteTo(file, 0)
 ```
 
-Regardless of how you activate the Memory profiler, the resulting profile will be a table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
+Regardless of how you activate the Memory profiler, the resulting profile will essentially be a table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
 
 |stack trace|alloc_objects/count|alloc_space/bytes|inuse_objects/count|inuse_space/bytes|
 |-|-|-|-|-|
@@ -250,7 +250,12 @@ Regardless of how you activate the Memory profiler, the resulting profile will b
 |main;foo;bar|3|768|0|0|
 |main;foobar|4|512|1|128|
 
-The memory profiler is implemented by 
+The memory profile contains two major pieces of information:
+
+- `alloc_*`: The amount of allocations that your program has made since the start of the process (or profiling period for delta profiles).
+- `insue_*`: The amount of allocations that your program has made that were still reachable during the last GC.
+
+
 
 ```
 func malloc(size):
@@ -275,7 +280,7 @@ func sweep(object):
   return object
 ```
 
-
+### Memory Inuse vs RSS
 
 ### Known Memory Profiler Issues
 
