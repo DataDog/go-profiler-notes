@@ -122,7 +122,7 @@ Performing GC involves a lot of expensive graph traversal and cache thrashing. I
 
 Generally speaking the cost of GC is proportional to the amount of heap allocations your program performs. So when it comes to optimizing the memory related overhead of your program, the mantra is:
 
-- **Reduce**: Try to to turn heap allocations into stack allocations or avoid them alltogether.
+- **Reduce**: Try to to turn heap allocations into stack allocations or avoid them alltogether. Minimizing the number of pointers on the heap also helps.
 - **Reuse:** Reuse heap allocations rather than replacing them with new ones.
 - **Recycle:** Some heap allocations can't be avoided. Let the GC recycle them and focus on other issues.
 
@@ -135,11 +135,13 @@ Go's CPU profiler can help you identify which parts of your code base consume a 
 
 ⚠️ Please note that CPU time is usually different from the real time experienced as latency by your users. For example a typical http request might take `100ms` to complete, but only consume `5ms` of CPU time while waiting for `95ms` on a database. It's also possible for a request to take `100ms`, but spend `200ms` of CPU if two goroutines are performing CPU intensive work in parallel. If this is confusing to you, please refer to the [Goroutine Scheduler](#goroutine-scheduler) section.
 
-You can enable the CPU profiler via various APIs:
+You can control the CPU profiler via various APIs:
 
 - `go test -cpuprofile cpu.pprof` will run your tests and write a CPU profile to a file named `cpu.pprof`.
-- [`pprof.StartCPUProfile(w)`](https://pkg.go.dev/runtime/pprof#StartCPUProfile) will capture a CPU profile to `w` that covers the time span until [`pprof.StopCPUProfile()`](https://pkg.go.dev/runtime/pprof#StopCPUProfile) is called.
-- [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s CPU profile by hitting the `GET /debug/pprof/profile?seconds=30` of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`.
+- [`pprof.StartCPUProfile(w)`](https://pkg.go.dev/runtime/pprof#StartCPUProfile) captures a CPU profile to `w` that covers the time span until [`pprof.StopCPUProfile()`](https://pkg.go.dev/runtime/pprof#StopCPUProfile) is called.
+- [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s CPU profile by hitting the `GET /debug/pprof/profile?seconds=30` endpoint of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`.
+- [`runtime.SetCPUProfileRate()`](https://pkg.go.dev/runtime#SetCPUProfileRate) lets you to control the sampling rate of the CPU profiler. See [Known CPU Profiler Issues](#known-cpu-profiler-issues) for current limitations.
+- [`runtime.SetCgoTraceback()`](https://pkg.go.dev/runtime#SetCgoTraceback) can be used to get stack traces into cgo code. [benesch/cgosymbolizer](https://github.com/benesch/cgosymbolizer) has an implementation for Linux and macOS.
 
 If you need a quick snippet to paste into your `main()` function, you can use the code below:
 
@@ -159,7 +161,7 @@ Regardless of how you activate the CPU profiler, the resulting profile will be a
 
 The CPU profiler captures this data by asking the operating system to monitor the CPU usage of the application and sends it a `SIGPROF` signal for every `10ms` of CPU time it consumes. The OS also includes time consumed by the kernel on behalf of the application in this monitoring. Since the signal deliver rate depends on CPU consumption, it's dynamic and can be up to `N * 100Hz` where `N` is the number of logical CPU cores on the system. When a `SIGPROF` signal arrives, Go's signal handler captures a stack trace of the currently active goroutine, and increments the corresponding values in the profile. The `cpu/nanoseconds` value is currently directly derived from the sample count, so it is redundant, but convenient.
 
-### Profiler Labels
+### CPU Profiler Labels
 
 A cool feature of Go's CPU profiler is that you can attach arbitrary key value pairs to a goroutine. These labels will be inherited by any goroutine spawned from that goroutine and show up in the resulting profile.
 
@@ -220,16 +222,67 @@ There are a few known issues and limitations of the CPU profiler that you might 
 
 ## Memory Profiler
 
-Go's memory profiler can help you identify which parts of your code base perform a lot of heap allocations, as well as how many of these allocations were still reachable during the last garbage collection. Because of this, the profile produced by the memory profiler is also often referred to as the heap profile.
+Go's memory profiler can help you identify which parts of your code base perform a lot of heap allocations, as well as how many of these allocations were still reachable during the last garbage collection. Because of this, the profile produced by the memory profiler is also often referred to as a heap profile.
 
 Heap memory management related activities are often responsible for up to 20-30% of CPU time consumed by Go processes. Additionally the elimination of heap allocations can have second order effects that speed up other parts of your code due to decreasing the amount of cache thrashing that occurs when the garbage collector has to scan the heap. This means that optimizing memory allocations can often have a better return on investment than optimizing CPU-bound code paths in your program.
 
 ⚠️ The memory profiler does not show stack allocations as these are generally much cheaper than heap allocations. Please refer to the [Garbage Collector](#garbage-collector) section for more details.
 
-You can enable the heap profiler via various APIs:
+You can enable the memory profiler via various APIs:
 
 - `go test -memprofile mem.pprof` will run your tests and write a memory profile to a file named `mem.pprof`.
- Lookup("heap").WriteTo(w, 0)
+- [`pprof.Lookup("heap").WriteTo(w, 0)`](https://pkg.go.dev/runtime/pprof#Lookup) writes a memory profile that covers the time since the start of the process to `w`.
+- [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s memory profile by hitting the `GET /debug/pprof/heap?seconds=30` endpoint of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`. This is also called a delta profile internally.
+- [`runtime.MemProfileRate`](https://pkg.go.dev/runtime#MemProfileRate) lets you to control the sampling rate of the memory profiler. See [Known Memory Profiler Issues](#known-memory-profiler-issues) for current limitations.
+
+If you need a quick snippet to paste into your `main()` function, you can use the code below:
+
+```go
+file, _ := os.Create("./mem.pprof")
+pprof.Lookup("heap").WriteTo(file, 0)
+```
+
+Regardless of how you activate the Memory profiler, the resulting profile will be a table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
+
+|stack trace|alloc_objects/count|alloc_space/bytes|inuse_objects/count|inuse_space/bytes|
+|-|-|-|-|-|
+|main;foo|5|120|2|48|
+|main;foo;bar|3|768|0|0|
+|main;foobar|4|512|1|128|
+
+The memory profiler is implemented by 
+
+```
+func malloc(size):
+  object = ... // alloc magic
+
+  if poisson_sample(size):
+    s = stacktrace()
+    profile[s].allocs++
+    profile[s].alloc_bytes += sizeof(object)
+    track_profiled(object, s)
+
+  return object
+
+func sweep(object):
+  // do gc stuff to free object
+
+  if is_profiled(object)
+    s = alloc_stacktrace(object)
+    profile[s].frees++
+    profile[s].free_bytes += sizeof(object)
+
+  return object
+```
+
+
+
+### Known Memory Profiler Issues
+
+- ⚠️ [`runtime.MemProfileRate`](https://pkg.go.dev/runtime#MemProfileRate) must be should only be modified once as early as possible in the startup of the program, for example at the beginning of `main()`. Writing this value is inherently a small data race, and changing it multiple times during program execution will produce incorrect profiles.
+- ⚠ The memory profiler does not support labels like the [CPU Profiler Labels](#cpu-profiler-labels). It's difficult to add this feature to the current implementation as it could create a memory leak in the internal hash map that holds the memory profiling data.
+- ⚠ The memory profiler does not show heap allocations made by cgo C code.
+
 ## ThreadCreate Profiler
 
 🐞 The threadcreate profile is intended to show stack traces that led to the creation of new OS threads. However, it's been [broken since 2013](https://github.com/golang/go/issues/6104), so you should stay away from it.
