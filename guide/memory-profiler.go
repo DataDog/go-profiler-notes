@@ -3,19 +3,26 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"runtime"
 	"runtime/pprof"
 	"time"
 )
 
 func main() {
-	file, _ := os.Create("./mem.pprof")
+	file, _ := os.Create("./memory-profiler.pprof")
 	defer pprof.Lookup("allocs").WriteTo(file, 0)
+	defer runtime.GC()
 
 	go allocSmall()
 	go allocBig()
 
 	time.Sleep(1 * time.Second)
+
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	fmt.Printf("%#v\n", m)
 }
 
 //go:noinline
