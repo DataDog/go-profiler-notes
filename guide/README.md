@@ -123,7 +123,7 @@ Performing GC involves a lot of expensive graph traversal and cache thrashing. I
 
 Generally speaking the cost of GC is proportional to the amount of heap allocations your program performs. So when it comes to optimizing the memory related overhead of your program, the mantra is:
 
-- **Reduce**: Try to to turn heap allocations into stack allocations or avoid them alltogether. Minimizing the number of pointers on the heap also helps.
+- **Reduce**: Try to turn heap allocations into stack allocations or avoid them altogether. Minimizing the number of pointers on the heap also helps.
 - **Reuse:** Reuse heap allocations rather than replacing them with new ones.
 - **Recycle:** Some heap allocations can't be avoided. Let the GC recycle them and focus on other issues.
 
