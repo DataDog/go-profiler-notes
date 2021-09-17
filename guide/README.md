@@ -287,7 +287,7 @@ The pseudo code below should capture the essential aspects of the memory profile
 
 ```
 func malloc(size):
-  object = ... // allocator magic
+  object = ... // allocation magic
 
   if poisson_sample(size):
     s = stacktrace()
@@ -307,7 +307,7 @@ func sweep(object):
     mem_profile[s].frees++
     mem_profile[s].free_bytes += sizeof(object)
 
-  // gc free object
+	// deallocation magic
 ```
 
 The `free_*` counters themselves are not included in the final memory profile. Instead they are used to calculate the `insue_*` counters in the profile via simple `allocs - frees` subtraction. Additionally the final output values are scaled by dividing them through their sampling probability.
@@ -344,5 +344,6 @@ Notes:
 - pprof: Maybe host a service to convert perf.data files into pprof files?
 - Reuse cute gophers from conf talks.
 - pprof cli tips from rhys h. on gopher slack: Favorite options include edgefraction=0, nodefraction=0, and nodecount of something larger than 80 (but rendering gets slow). Plus focus, and an ever-growing regexp (as I dive in to the profile) in ignore.
+- https://profiler.firefox.com/ can view linux perf files? With time axis? see https://www.markhansen.co.nz/profiler-uis/
 
 -->
