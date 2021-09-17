@@ -1,5 +1,5 @@
 ⬅ [Index of all go-profiler-notes](../README.md)
-# The Busy Developers's Guide to Go Profiling, Tracing and Observability
+# The Busy Developer's Guide to Go Profiling, Tracing and Observability
 
 - **[Introduction](#introduction):** [Read This](#read-this) · [Mental Model for Go](#mental-model-for-go) · Profiling vs Tracing
 - **Use Cases:** Reduce Costs · Reduce Latency · Memory Leaks · Program Hanging · Outages
