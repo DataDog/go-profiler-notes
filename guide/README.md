@@ -142,6 +142,7 @@ Here is an overview of the profilers built into the Go runtime. For more details
 
 1. One O(N) stop-the-world pauses where N is the number of goroutines. Expect ~1-10µsec pause per goroutine.
 2. Totally broken, don't try to use it.
+3. Depends on the API.
 
 <!-- TODO mega snippet to enable all profilers -->
 
