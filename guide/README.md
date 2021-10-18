@@ -133,7 +133,7 @@ As with the previous mental model in this guide, everything above is an extremel
 
 Here is an overview of the profilers built into the Go runtime. For more details following the links.
 
-| | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | [Block](#block-profiler) | Mutex | Goroutine | [ThreadCreate](#threadcreate-profiler) |
+| | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | Block | Mutex | Goroutine | [ThreadCreate](#threadcreate-profiler) |
 |-|-|-|-|-|-|-|
 |Production Safety|✅|✅|✅|✅|⚠️ (1.)|🐞 (2.)|
 |Safe Rate|default|default|`10000`|`10`|`1000` goroutines|-|
