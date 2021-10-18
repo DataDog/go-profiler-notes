@@ -3,7 +3,7 @@
 
 - **[Introduction](#introduction):** [Read This](#read-this) · [Mental Model for Go](#mental-model-for-go) · Profiling vs Tracing
 - **Use Cases:** Reduce Costs · Reduce Latency · Memory Leaks · Program Hanging · Outages
-- **Go Profilers**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · Block · Mutex · Goroutine · [ThreadCreate](#threadcreate-profiler)
+- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · Block · Mutex · Goroutine · [ThreadCreate](#threadcreate-profiler)
 - **Viewing Profiles**: Command Line · Flame Graph · Graph
 - **Go Execution Tracer:** Timeline View · Derive Profiles
 - **Go Metrics:**  MemStats
@@ -130,6 +130,21 @@ Generally speaking the cost of GC is proportional to the amount of heap allocati
 As with the previous mental model in this guide, everything above is an extremely simplified view of reality. But hopefully it will be good enough to make sense out of the remainder of this guide, and inspire you to read more articles on the subject. One article you should definitely read is [Getting to Go: The Journey of Go's Garbage Collector](https://go.dev/blog/ismmkeynote) which gives you a good idea of how Go's GC has advanced over the years, and the pace at which it is improving.
 
 # Go Profilers
+
+Here is an overview of the profilers built into the Go runtime. For more details following the links.
+
+| | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | [Block](#block-profiler) | Mutex | Goroutine | [ThreadCreate](#threadcreate-profiler) |
+|-|-|-|-|-|-|-|
+|Production Safety|✅|✅|✅|✅|⚠️ (1.)|🐞 (2.)|
+|Safe Rate|default|default|`10000`|`10`|`1000` goroutines|-|
+|Accuracy|⭐️⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|-|
+|Max Stack Depth|`64`|`32`|`32`|`32`|`32` - `100` (3.)|-|
+
+1. One O(N) stop-the-world pauses where N is the number of goroutines. Expect ~1-10µsec pause per goroutine.
+2. Totally broken, don't try to use it.
+
+<!-- TODO mega snippet to enable all profilers -->
+
 ## CPU Profiler
 
 Go's CPU profiler can help you identify which parts of your code base consume a lot of CPU time.
