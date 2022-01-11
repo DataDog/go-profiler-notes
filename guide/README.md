@@ -273,7 +273,7 @@ Regardless of how you activate the Memory profiler, the resulting profile will e
 A memory profile contains two major pieces of information:
 
 - `alloc_*`: The amount of allocations that your program has made since the start of the process (or profiling period for delta profiles).
-- `insue_*`: The amount of allocations that your program has made that were still reachable during the last GC.
+- `inuse_*`: The amount of allocations that your program has made that were still reachable during the last GC.
 
 You can use this information for various purposes. For example you can use the `alloc_*` data to determine which code paths might be producing a lot of garbage for the GC to deal with, and looking at the `inuse_*` data over time can help you with investigating memory leaks or high memory usage by your program.
 
@@ -326,7 +326,7 @@ func sweep(object):
 	// deallocation magic
 ```
 
-The `free_*` counters themselves are not included in the final memory profile. Instead they are used to calculate the `insue_*` counters in the profile via simple `allocs - frees` subtraction. Additionally the final output values are scaled by dividing them through their sampling probability.
+The `free_*` counters themselves are not included in the final memory profile. Instead they are used to calculate the `inuse_*` counters in the profile via simple `allocs - frees` subtraction. Additionally the final output values are scaled by dividing them through their sampling probability.
 
 ### Memory Profiler Limitations
 
