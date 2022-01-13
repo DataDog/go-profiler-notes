@@ -3,7 +3,7 @@
 
 - **[Introduction](#introduction):** [Read This](#read-this) · [Mental Model for Go](#mental-model-for-go) · Profiling vs Tracing
 - **Use Cases:** Reduce Costs · Reduce Latency · Memory Leaks · Program Hanging · Outages
-- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · Block · Mutex · Goroutine · [ThreadCreate](#threadcreate-profiler)
+- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · [Block](#block-profiler) · Mutex · Goroutine · [ThreadCreate](#threadcreate-profiler)
 - **Viewing Profiles**: Command Line · Flame Graph · Graph
 - **Go Execution Tracer:** Timeline View · Derive Profiles
 - **Go Metrics:**  MemStats
@@ -133,12 +133,13 @@ As with the previous mental model in this guide, everything above is an extremel
 
 Here is an overview of the profilers built into the Go runtime. For more details following the links.
 
-| | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | Block | Mutex | Goroutine | [ThreadCreate](#threadcreate-profiler) |
+| | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | [Block](#block-profiler) | Mutex | Goroutine | [ThreadCreate](#threadcreate-profiler) |
 |-|-|-|-|-|-|-|
 |Production Safety|✅|✅|✅|✅|⚠️ (1.)|🐞 (2.)|
 |Safe Rate|default|default|`10000`|`10`|`1000` goroutines|-|
 |Accuracy|⭐️⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|-|
 |Max Stack Depth|`64`|`32`|`32`|`32`|`32` - `100` (3.)|-|
+|Profiler Labels|✅|❌|❌|❌|✅|-|
 
 1. One O(N) stop-the-world pauses where N is the number of goroutines. Expect ~1-10µsec pause per goroutine.
 2. Totally broken, don't try to use it.
@@ -256,7 +257,7 @@ Heap memory management related activities are often responsible for up to 20-30%
 You can control the memory profiler via various APIs:
 
 - `go test -memprofile mem.pprof` will run your tests and write a memory profile to a file named `mem.pprof`.
-- [`pprof.Lookup("allocs").WriteTo(w, 0)`](https://pkg.go.dev/runtime/pprof#Lookup) writes a memory profile that covers the time since the start of the process to `w`.
+- [`pprof.Lookup("allocs").WriteTo(w, 0)`](https://pkg.go.dev/runtime/pprof#Lookup) writes a memory profile that contains allocation events since the start of the process to `w`.
 - [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s memory profile by hitting the `GET /debug/pprof/allocs?seconds=30` endpoint of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`. This is also called a delta profile internally.
 - [`runtime.MemProfileRate`](https://pkg.go.dev/runtime#MemProfileRate) lets you to control the sampling rate of the memory profiler. See [Memory Profiler Limitations](#memory-profiler-limitations) for current limitations.
 
@@ -345,6 +346,84 @@ There are a few known issues and limitations of the memory profiler that you mig
 - ⚠ Memory profile data may be up to two garbage collection cycles old. If you want a more consistent point-in-time snapshot, consider calling `runtime.GC()` before requesting a memory profile. [net/http/pprof](https://pkg.go.dev/net/http/pprof) accepts a `?gc=1` argument for this purpose. For more information see the [runtime.MemProfile()](https://pkg.go.dev/runtime#MemProfile) docs, as well as as the comment on `memRecord` in [`mprof.go`](https://github.com/golang/go/blob/master/src/runtime/mprof.go).
 - ⚠️ The maximum number of nested function calls that can be captured in stack traces by the memory profiler is currently [`32`](https://sourcegraph.com/search?q=context:global+repo:github.com/golang/go+file:src/*+maxStack+%3D&patternType=literal), see [CPU Profiler Limitations](#cpu-profiler-limitations) for more information on what happens when you exceed this limit.
 - ⚠️ There is no size limit for the internal hash map that holds the memory profile. This means it will grow in size until it covers all allocating code paths in your code base. This is not a problem in practice, but might look like a small memory leak if you're observing the memory usage of your process.
+
+## Block Profiler
+
+The block profiler in Go measures how much time your goroutines spend Off-CPU while waiting for channel operations as well as mutex operations provided by the [sync](https://pkg.go.dev/sync) package.
+
+⚠️ Block profiles do not include time spend waiting on I/O, Sleep, GC and various other waiting states. Additionally blocking events are not recorded until they have completed, so the block profile can't be used to debug why a Go program is currently hanging. The latter can be determined using the Goroutine Profiler.
+
+You can control the block profiler via various APIs:
+
+- `go test -blockprofile block.pprof` will run your tests and write a block profile that captures every blocking event to a file named `block.pprof`.
+- [`runtime.SetBlockProfileRate(rate)`](https://pkg.go.dev/runtime#SetBlockProfileRate) lets you to enable and control the sampling rate of the block profiler.
+- [`pprof.Lookup("block").WriteTo(w, 0)`](https://pkg.go.dev/runtime/pprof#Lookup) writes a block profile that contains blocking events since the start of the process to `w`.
+- [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s block profile by hitting the `GET /debug/pprof/block?seconds=30` endpoint of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`. This is also called a delta profile internally.
+
+
+If you need a quick snippet to paste into your `main()` function, you can use the code below:
+
+```go
+runtime.SetBlockProfileRate(10000)
+file, _ := os.Create("./block.pprof")
+defer pprof.Lookup("block").WriteTo(file, 0)
+```
+
+Regardless of how you activate the block profiler, the resulting profile will essentially be a table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
+
+|stack trace|contentions/count|delay/nanoseconds|
+|-|-|-|
+|main;foo|5|867549417|
+|main;foo;bar|3|453510869|
+|main;foobar|4|5351086|
+
+### Block Profiler Implementation
+
+The pseudo code below should capture the essential aspects of the block profiler's implementation to give you a better intuition for it. When sending a message to channel, i.e. `ch <- msg`, Go invokes the `chansend()` function in the runtime that is shown below. If the channel is `ready()` to receive the message, the `send()` happens immediately. Otherwise the block profiler captures the `start` time of the blocking event and uses `wait_until_ready()` to ask the scheduler to move the goroutine off the CPU until the channel is ready. Once the channel is ready, the blocking `duration` is determined and used by `random_sample()` along with the sampling `rate` to decide if this block event should be recorded. If yes, the current stack trace `s` is captured and used as a key inside of the `block_profile` hash map to increment the `count` and `delay` values. After that the actual `send()` operation proceeds.
+
+```
+func chansend(channel, msg):
+  if ready(channel):
+    send(channel, msg)
+    return
+
+  start = now()
+  wait_until_ready(channel) // Off-CPU Wait
+  duration = now() - start
+
+  if random_sample(duration, rate):
+    s = stacktrace()
+    // note: actual implementation is a bit trickier to correct for bias
+    block_profile[s].contentions += 1
+    block_profile[s].delay += duration
+
+  send(channel, msg)
+```
+
+The `random_sample` function looks like shown below. If the block profiler is enabled, all events where `duration >= rate` are captured, and shorter events have a `duration/rate` chance of being captured.
+
+```
+func random_sample(duration, rate):
+  if rate <= 0 || (duration < rate && duration/rate > rand(0, 1)):
+    return false
+  return true
+```
+
+In other words, if you set `rate` to `10.000` (the unit is nanoseconds), all blocking events lasting `10 µsec` or longer are captured. Additionally `10%` of events lasting `1 µsec` and `1%` of events lasting `1sec`, and so on, are captured as well.
+
+### Block vs Mutex Profiler
+
+Both block and mutex profiler report time waiting on mutexes. The difference is that the block profiler captures the time waiting to acquire a `Lock()`, whereas the mutex profiler captures the time another goroutine was waiting before `Unlock()` allowed it to proceed.
+
+In other words, the block profiler shows you which goroutines are experiencing increased latency due to mutex contentions whereas the mutex profiler shows you the goroutines that are holding the locks that are causing the contention.
+
+### Block Profiler Limitations
+
+- ⚠ Block profiles cover only a small subset of [Off-CPU waiting states](https://github.com/golang/go/blob/go1.17.1/src/runtime/runtime2.go#L1053-L1081) a goroutine can enter.
+- ⚠️ The maximum number of nested function calls that can be captured in stack traces by the memory profiler is currently [`32`](https://sourcegraph.com/search?q=context:global+repo:github.com/golang/go+file:src/*+maxStack+%3D&patternType=literal), see [CPU Profiler Limitations](#cpu-profiler-limitations) for more information on what happens when you exceed this limit.
+- ⚠️ There is no size limit for the internal hash map that holds the block profile. This means it will grow in size until it covers all blocking code paths in your code base. This is not a problem in practice, but might look like a small memory leak if you're observing the memory usage of your process.
+- ⚠ [CPU Profiler Labels](#cpu-profiler-labels) or similar are not supported by the block profiler. It's difficult to add this feature to the current implementation as it could create a memory leak in the internal hash map that holds the memory profiling data.
+- 🐞 Go 1.17 fixed a long-standing [sampling bias bug in the block profiler](../block-bias.md). Older versions of Go will overreport the impact of infrequent long blocking events over frequent short events.
 
 ## ThreadCreate Profiler
 
