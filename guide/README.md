@@ -150,7 +150,7 @@ Here is an overview of the profilers built into the Go runtime. For more details
 
 Go's CPU profiler can help you identify which parts of your code base consume a lot of CPU time.
 
-⚠️ Please note that CPU time is usually different from the real time experienced as latency by your users. For example a typical http request might take `100ms` to complete, but only consume `5ms` of CPU time while waiting for `95ms` on a database. It's also possible for a request to take `100ms`, but spend `200ms` of CPU if two goroutines are performing CPU intensive work in parallel. If this is confusing to you, please refer to the [Goroutine Scheduler](#goroutine-scheduler) section.
+⚠️ Please note that CPU time is usually different from the real time experienced by your users (aka latency). For example a typical http request might take `100ms` to complete, but only consume `5ms` of CPU time while waiting for `95ms` on a database. It's also possible for a request to take `100ms`, but spend `200ms` of CPU if two goroutines are performing CPU intensive work in parallel. If this is confusing to you, please refer to the [Goroutine Scheduler](#goroutine-scheduler) section.
 
 You can control the CPU profiler via various APIs:
 
@@ -209,6 +209,8 @@ Viewing the same profile with pprof's Graph view will also include the labels:
 
 How you use these labels is up to you. You might include things such as `user ids`, `request ids`, `http endpoints`, `subscription plan` or other data that can allow you to get a better understanding of what types of requests are causing high CPU utilization, even when they are being processed by the same code paths. That being said, using labels will increase the size of your pprof files. So you should probably start with low cardinality labels such as endpoints before moving on to high cardinality labels once you feel confident that they don't impact the performance of your application.
 
+⚠️ Go 1.17 and below contained several bugs that could cause some profiler labels to be missing from CPU profiles, see [CPU Profiler Limitations](#cpu-profiler-limitations) for more information.
+
 ### CPU Utilization
 
 Since the sample rate of the CPU profiler adapts to amount of CPU your program is consuming, you can derive the CPU utilization from CPU profiles. In fact pprof will do this automatically for you. For example the profile below was taking from a program that had an average CPU utilization of `147.77%`:
@@ -224,7 +226,7 @@ Entering interactive mode (type "help" for commands, "o" for options)
 
 Another popular way to express CPU utilization is CPU cores. In the example above the program was using an average of `1.47` CPU cores during the profiling period.
 
-⚠️ Due to one of the known [CPU Profiler Limitations](#cpu-profiler-limitations) below you shouldn't put too much trust in this number if it's near or higher than `250%`. However, if you see a very low number such as `10%` this usually indicates that CPU consumption is not an issue for your application. A common mistake is to ignore this number and start worrying about a particular function taking up a long time relative to the rest of the profile. This is usually a waste of time when overall CPU utilization is low, as not much can be gained from optimizing this function.
+⚠️ In Go 1.17 and below you shouldn't put too much trust in this number if it's near or higher than `250%`, see [CPU Profiler Limitations](#cpu-profiler-limitations). However, if you see a very low number such as `10%` this usually indicates that CPU consumption is not an issue for your application. A common mistake is to ignore this number and start worrying about a particular function taking up a long time relative to the rest of the profile. This is usually a waste of time when overall CPU utilization is low, as not much can be gained from optimizing this function.
 
 ### System Calls in CPU Profiles
 
@@ -235,7 +237,11 @@ If you see system calls such as `syscall.Read()` or `syscall.Write()` using a lo
 
 There are a few known issues and limitations of the CPU profiler that you might want to be aware of:
 
-- 🐞 A known issue on linux is that the CPU profiler struggles to achieve a sample rate beyond `250Hz`. This is usually not a problem, but can lead to bias if your CPU utilization is very spiky. For more information on this, check out this [GitHub issue](https://github.com/golang/go/issues/35057). Meanwhile you can use Linux perf which supports higher sampling frequencies.
+- 🐞 [GH #35057](https://github.com/golang/go/issues/35057): CPU profiles taken with Go versions <= 1.17 become somewhat inaccurate for programs utilizing more than 2.5 CPU cores. Generally speaking the overall CPU utilization will be underreported, and workload spikes may be underrepresented in the resulting profile as well. This is fixed in Go 1.18. Meanwhile you could try to use Linux perf as a workaround.
+- 🐞 Profiler labels in Go versions <= 1.17 suffered from several bugs.
+  - [GH #48577](https://github.com/golang/go/issues/48577) and [CL 367200](https://go-review.googlesource.com/c/go/+/367200/): Labels were missing for goroutines executing on the system stack, executing C code, or making system calls.
+  - [CL 369741](https://go-review.googlesource.com/c/go/+/369741): The first batch of samples in a CPU profile had an off-by-one error causing a misattribution of labels.
+  - [CL 369984](https://go-review.googlesource.com/c/go/+/369984): System goroutines created on behalf of user goroutines (e.g. for garbage collection) incorrectly inherited their parents labels.
 - ⚠️️ You can call [`runtime.SetCPUProfileRate()`](https://pkg.go.dev/runtime#SetCPUProfileRate) to adjust the CPU profiler rate before calling `runtime.StartCPUProfile()`. This will print a warning saying `runtime: cannot set cpu profile rate until previous profile has finished`. However, it still works within the limitation of the bug mentioned above. This issue was [initially raised here](https://github.com/golang/go/issues/40094), and there is an [accepted proposal for improving the API](https://github.com/golang/go/issues/42502).
 - ⚠️ The maximum number of nested function calls that can be captured in stack traces by the CPU profiler is currently [`64`](https://sourcegraph.com/search?q=context:global+repo:github.com/golang/go+file:src/*+maxCPUProfStack+%3D&patternType=literal). If your program is using a lot of recursion or other patterns that lead to deep stack depths, your CPU profile will include stack traces that are truncated. This means you will miss parts of the call chain that led to the function that was active at the time the sample was taken.
 
