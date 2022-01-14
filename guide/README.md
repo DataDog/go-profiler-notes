@@ -3,7 +3,7 @@
 
 - **[Introduction](#introduction):** [Read This](#read-this) · [Mental Model for Go](#mental-model-for-go) · Profiling vs Tracing
 - **Use Cases:** Reduce Costs · Reduce Latency · Memory Leaks · Program Hanging · Outages
-- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · [Block](#block-profiler) · Mutex · Goroutine · [ThreadCreate](#threadcreate-profiler)
+- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · [Block](#block-profiler) · [Mutex](#mutex-profiler) · Goroutine · [ThreadCreate](#threadcreate-profiler)
 - **Viewing Profiles**: Command Line · Flame Graph · Graph
 - **Go Execution Tracer:** Timeline View · Derive Profiles
 - **Go Metrics:**  MemStats
