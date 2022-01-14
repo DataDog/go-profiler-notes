@@ -447,6 +447,16 @@ file, _ := os.Create("./mutex.pprof")
 defer pprof.Lookup("mutex").WriteTo(file, 0)
 ```
 
+The resulting mutex profile will essentially be a table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
+
+|stack trace|contentions/count|delay/nanoseconds|
+|-|-|-|
+|main;foo|5|867549417|
+|main;foo;bar|3|453510869|
+|main;foobar|4|5351086| 
+
+⚠️ The stack traces in the profile will point to calls to `Unlock`. While this may be unintuitive at first, what this shows is the point where the goroutine holding the lock released it. The code between the call to `Unlock` and the call to `Lock` that preceded it is the source of the measured contention.
+
 ### Mutex profiler implementation
 
 The mutex profiler is implemented by recording the time from when a goroutine tries to acquire a lock (e.g. `mu.Lock()`) to when the lock is released by the goroutine holding the lock (e.g. `mu.Unlock()`). First, a goroutine calls `semacquire()` to take the lock, and records the time it started waiting if the lock is already held. When the goroutine holding the lock releases it by calling `semrelease()`, the goroutine will look for the next goroutine waiting for the lock, and see how long that goroutine spent waiting. This tells us how long the goroutine spent holding the lock. The current mutex profiling value `rate` is used to randomly decide whether to record this event. If it's randomly chosen, the blocking time is recorded to a `mutex_profile` hash map keyed by the call stack where the goroutine released the lock.
