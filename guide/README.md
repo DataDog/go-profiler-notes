@@ -427,7 +427,7 @@ In other words, the block profiler shows you which goroutines are experiencing i
 
 ## Mutex profiler
 
-The mutex profiler measure how long goroutines spend blocking other goroutines. In other words, it measures the sources of lock contention. The mutex profiler can capture contention coming from `sync.Mutex` and `sync.RWMutex`.
+The mutex profiler measures how long goroutines spend blocking other goroutines. In other words, it measures the sources of lock contention. The mutex profiler can capture contention coming from `sync.Mutex` and `sync.RWMutex`.
 
 ⚠️ Mutex profiles do not include other sources of contention such as `sync.WaitGroup` or accessing file descriptors. Additionally, mutex contention is not recorded until the mutex is unlocked, so the mutex profile can't be used to debug why a Go program is currently hanging. The latter can be determined using the Goroutine Profiler.
 
@@ -455,11 +455,11 @@ The resulting mutex profile will essentially be a table of stack traces formatte
 |main;foo;bar|3|453510869|
 |main;foobar|4|5351086| 
 
-⚠️ The stack traces in the profile will point to calls to `Unlock`. While this may be unintuitive at first, what this shows is the point where the goroutine holding the lock released it. The code between the call to `Unlock` and the call to `Lock` that preceded it is the source of the measured contention.
+⚠️ The stack traces in the profile will point to calls to `Unlock`. While this may be unintuitive at first, the code between the call to `Unlock` shown in the profile and the call to `Lock` that preceded was running while other goroutines were waiting on the same lock, meaning it was a source of contention. The time recorded in the profile shows how much time other goroutines waited during that contention.
 
 ### Mutex profiler implementation
 
-The mutex profiler is implemented by recording the time from when a goroutine tries to acquire a lock (e.g. `mu.Lock()`) to when the lock is released by the goroutine holding the lock (e.g. `mu.Unlock()`). First, a goroutine calls `semacquire()` to take the lock, and records the time it started waiting if the lock is already held. When the goroutine holding the lock releases it by calling `semrelease()`, the goroutine will look for the next goroutine waiting for the lock, and see how long that goroutine spent waiting. This tells us how long the goroutine spent holding the lock. The current mutex profiling value `rate` is used to randomly decide whether to record this event. If it's randomly chosen, the blocking time is recorded to a `mutex_profile` hash map keyed by the call stack where the goroutine released the lock.
+The mutex profiler is implemented by recording the time from when a goroutine tries to acquire a lock (e.g. `mu.Lock()`) to when the lock is released by the goroutine holding the lock (e.g. `mu.Unlock()`). First, a goroutine calls `semacquire()` to take the lock, and records the time it started waiting if the lock is already held. When the goroutine holding the lock releases it by calling `semrelease()`, the goroutine will look for the next goroutine waiting for the lock, and see how long that goroutine spent waiting. The current mutex profiling value `rate` is used to randomly decide whether to record this event. If it's randomly chosen, the blocking time is recorded to a `mutex_profile` hash map keyed by the call stack where the goroutine released the lock.
 
 In pseudocode:
 
