@@ -433,7 +433,7 @@ The mutex profiler measures how long goroutines spend blocking other goroutines.
 
 You can control the mutex profiler via various APIs:
 
-- `go test -mutexprofile mutex.pprof` will run your tests and write a mutex profile to a file named `block.pprof`.
+- `go test -mutexprofile mutex.pprof` will run your tests and write a mutex profile to a file named `mutex.pprof`.
 - [`runtime.SetMutexProfileRate(rate)`](https://pkg.go.dev/runtime#SetMutexProfileRate) lets you to enable and control the sampling rate of the mutex profiler. If you set a sampling rate of `R`, then an average of `1/R` mutex contention events are captured. If the rate is 0 or less, nothing is captured.
 - [`pprof.Lookup("mutex").WriteTo(w, 0)`](https://pkg.go.dev/runtime/pprof#Lookup) writes a mutex profile that contains mutex events since the start of the process to `w`.
 - [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s mutex profile by hitting the `GET /debug/pprof/mutex?seconds=30` endpoint of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`. This is also called a delta profile internally.
@@ -442,7 +442,7 @@ You can control the mutex profiler via various APIs:
 If you need a quick snippet to paste into your `main()` function, you can use the code below:
 
 ```go
-runtime.SetMutexProfileFraction(10000)
+runtime.SetMutexProfileFraction(100)
 file, _ := os.Create("./mutex.pprof")
 defer pprof.Lookup("mutex").WriteTo(file, 0)
 ```
