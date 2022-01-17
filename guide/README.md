@@ -429,7 +429,7 @@ In other words, the block profiler shows you which goroutines are experiencing i
 
 The mutex profiler measures how long goroutines spend blocking other goroutines. In other words, it measures the sources of lock contention. The mutex profiler can capture contention coming from `sync.Mutex` and `sync.RWMutex`.
 
-⚠️ Mutex profiles do not include other sources of contention such as `sync.WaitGroup` or accessing file descriptors. Additionally, mutex contention is not recorded until the mutex is unlocked, so the mutex profile can't be used to debug why a Go program is currently hanging. The latter can be determined using the Goroutine Profiler.
+⚠️ Mutex profiles do not include other sources of contention such as `sync.WaitGroup`, `sync.Cond`, or accessing file descriptors. Additionally, mutex contention is not recorded until the mutex is unlocked, so the mutex profile can't be used to debug why a Go program is currently hanging. The latter can be determined using the Goroutine Profiler.
 
 You can control the mutex profiler via various APIs:
 
@@ -455,7 +455,7 @@ The resulting mutex profile will essentially be a table of stack traces formatte
 |main;foo;bar|3|453510869|
 |main;foobar|4|5351086| 
 
-⚠️ The stack traces in the profile will point to calls to `Unlock`. While this may be unintuitive at first, the code between the call to `Unlock` shown in the profile and the call to `Lock` that preceded was running while other goroutines were waiting on the same lock, meaning it was a source of contention. The time recorded in the profile shows how much time other goroutines waited during that contention.
+⚠️ See the section on [block vs mutex profiles](#block-vs-mutex-profiler) for the difference between the two profiles.
 
 ### Mutex profiler implementation
 
