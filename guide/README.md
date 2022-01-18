@@ -451,9 +451,9 @@ The resulting mutex profile will essentially be a table of stack traces formatte
 
 |stack trace|contentions/count|delay/nanoseconds|
 |-|-|-|
-|main;foo|5|867549417|
-|main;foo;bar|3|453510869|
-|main;foobar|4|5351086| 
+|main;foo;sync.(*Mutex).Unlock|5|867549417|
+|main;bar;baz;sync.(*Mutex).Unlock|3|453510869|
+|main;foobar;sync.(*RWMutex).RUnlock|4|5351086|
 
 ⚠️ See the section on [block vs mutex profiles](#block-vs-mutex-profiler) for the difference between the two profiles.
 
