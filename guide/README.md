@@ -349,7 +349,13 @@ There are a few known issues and limitations of the memory profiler that you mig
 
 ## Block Profiler
 
-The block profiler in Go measures how much time your goroutines spend Off-CPU while waiting for channel operations as well as mutex operations provided by the [sync](https://pkg.go.dev/sync) package.
+The block profiler in Go measures how much time your goroutines spend Off-CPU while waiting for channel as well as mutex operations provided by the [sync](https://pkg.go.dev/sync) package. The following Go operations are hooked up to the block profiler:
+
+- [select](https://github.com/golang/go/blob/go1.15.7/src/runtime/select.go#L511)
+- [chan send](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L279)
+- [chan receive](https://github.com/golang/go/blob/go1.15.7/src/runtime/chan.go#L586)
+- [semacquire](https://github.com/golang/go/blob/go1.15.7/src/runtime/sema.go#L150) ( [`Mutex.Lock`](https://golang.org/pkg/sync/#Mutex.Lock), [`RWMutex.RLock`](https://golang.org/pkg/sync/#RWMutex.RLock) , [`RWMutex.Lock`](https://golang.org/pkg/sync/#RWMutex.Lock), [`WaitGroup.Wait`](https://golang.org/pkg/sync/#WaitGroup.Wait))
+- [notifyListWait](https://github.com/golang/go/blob/go1.15.7/src/runtime/sema.go#L515) ( [`Cond.Wait`](https://golang.org/pkg/sync/#Cond.Wait))
 
 ⚠️ Block profiles do not include time spend waiting on I/O, Sleep, GC and various other waiting states. Additionally blocking events are not recorded until they have completed, so the block profile can't be used to debug why a Go program is currently hanging. The latter can be determined using the Goroutine Profiler.
 
@@ -373,9 +379,9 @@ Regardless of how you activate the block profiler, the resulting profile will es
 
 |stack trace|contentions/count|delay/nanoseconds|
 |-|-|-|
-|main;foo|5|867549417|
-|main;foo;bar|3|453510869|
-|main;foobar|4|5351086|
+|main;foo;runtime.selectgo|5|867549417|
+|main;foo;bar;sync.(*Mutex).Lock|3|453510869|
+|main;foobar;runtime.chanrecv1|4|5351086|
 
 ### Block Profiler Implementation
 
