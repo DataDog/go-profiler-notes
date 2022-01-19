@@ -3,7 +3,7 @@
 
 - **[Introduction](#introduction):** [Read This](#read-this) · [Mental Model for Go](#mental-model-for-go) · Profiling vs Tracing
 - **Use Cases:** Reduce Costs · Reduce Latency · Memory Leaks · Program Hanging · Outages
-- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · [Block](#block-profiler) · Mutex · Goroutine · [ThreadCreate](#threadcreate-profiler)
+- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · [Block](#block-profiler) · [Mutex](#mutex-profiler) · Goroutine · [ThreadCreate](#threadcreate-profiler)
 - **Viewing Profiles**: Command Line · Flame Graph · Graph
 - **Go Execution Tracer:** Timeline View · Derive Profiles
 - **Go Metrics:**  MemStats
@@ -424,6 +424,76 @@ In other words, the block profiler shows you which goroutines are experiencing i
 - ⚠️ There is no size limit for the internal hash map that holds the block profile. This means it will grow in size until it covers all blocking code paths in your code base. This is not a problem in practice, but might look like a small memory leak if you're observing the memory usage of your process.
 - ⚠ [CPU Profiler Labels](#cpu-profiler-labels) or similar are not supported by the block profiler. It's difficult to add this feature to the current implementation as it could create a memory leak in the internal hash map that holds the memory profiling data.
 - 🐞 Go 1.17 fixed a long-standing [sampling bias bug in the block profiler](../block-bias.md). Older versions of Go will overreport the impact of infrequent long blocking events over frequent short events.
+
+## Mutex profiler
+
+The mutex profiler measures how long goroutines spend blocking other goroutines. In other words, it measures the sources of lock contention. The mutex profiler can capture contention coming from `sync.Mutex` and `sync.RWMutex`.
+
+⚠️ Mutex profiles do not include other sources of contention such as `sync.WaitGroup`, `sync.Cond`, or accessing file descriptors. Additionally, mutex contention is not recorded until the mutex is unlocked, so the mutex profile can't be used to debug why a Go program is currently hanging. The latter can be determined using the Goroutine Profiler.
+
+You can control the mutex profiler via various APIs:
+
+- `go test -mutexprofile mutex.pprof` will run your tests and write a mutex profile to a file named `mutex.pprof`.
+- [`runtime.SetMutexProfileRate(rate)`](https://pkg.go.dev/runtime#SetMutexProfileRate) lets you to enable and control the sampling rate of the mutex profiler. If you set a sampling rate of `R`, then an average of `1/R` mutex contention events are captured. If the rate is 0 or less, nothing is captured.
+- [`pprof.Lookup("mutex").WriteTo(w, 0)`](https://pkg.go.dev/runtime/pprof#Lookup) writes a mutex profile that contains mutex events since the start of the process to `w`.
+- [`import _ "net/http/pprof"`](https://pkg.go.dev/net/http/pprof) allows you to request a 30s mutex profile by hitting the `GET /debug/pprof/mutex?seconds=30` endpoint of the default http server that you can start via `http.ListenAndServe("localhost:6060", nil)`. This is also called a delta profile internally.
+
+
+If you need a quick snippet to paste into your `main()` function, you can use the code below:
+
+```go
+runtime.SetMutexProfileFraction(100)
+file, _ := os.Create("./mutex.pprof")
+defer pprof.Lookup("mutex").WriteTo(file, 0)
+```
+
+The resulting mutex profile will essentially be a table of stack traces formatted in the binary [pprof](../pprof.md) format. A simplified version of such a table is shown below:
+
+|stack trace|contentions/count|delay/nanoseconds|
+|-|-|-|
+|main;foo;sync.(*Mutex).Unlock|5|867549417|
+|main;bar;baz;sync.(*Mutex).Unlock|3|453510869|
+|main;foobar;sync.(*RWMutex).RUnlock|4|5351086|
+
+⚠️ See the section on [block vs mutex profiles](#block-vs-mutex-profiler) for the difference between the two profiles.
+
+### Mutex profiler implementation
+
+The mutex profiler is implemented by recording the time from when a goroutine tries to acquire a lock (e.g. `mu.Lock()`) to when the lock is released by the goroutine holding the lock (e.g. `mu.Unlock()`). First, a goroutine calls `semacquire()` to take the lock, and records the time it started waiting if the lock is already held. When the goroutine holding the lock releases it by calling `semrelease()`, the goroutine will look for the next goroutine waiting for the lock, and see how long that goroutine spent waiting. The current mutex profiling value `rate` is used to randomly decide whether to record this event. If it's randomly chosen, the blocking time is recorded to a `mutex_profile` hash map keyed by the call stack where the goroutine released the lock.
+
+In pseudocode:
+
+```
+func semacquire(lock):
+  if lock.take():
+    return
+
+  start = now()
+  waiters[lock].add(this_goroutine(), start)
+  wait_for_wake_up()
+
+func semrelease(lock):
+  next_goroutine, start = waiters[lock].get()
+  if !next_goroutine:
+    // If there weren't any waiting goroutines, there is no contention to record
+    return
+
+  duration = now() - start
+  if rand(0,1) < 1 / rate:
+    s = stacktrace()
+    mutex_profile[s].contentions += 1
+    mutex_profile[s].delay += duration
+
+  wake_up(next_goroutine)
+```
+
+### Mutex Profiler Limitations
+
+The mutex profiler has limitations similar to the block profiler:
+
+- ⚠️ The maximum number of nested function calls that can be captured in stack traces by the mutex profiler is currently [`32`](https://sourcegraph.com/search?q=context:global+repo:github.com/golang/go+file:src/*+maxStack+%3D&patternType=literal), see [CPU Profiler Limitations](#cpu-profiler-limitations) for more information on what happens when you exceed this limit.
+- ⚠️ There is no size limit for the internal hash map that holds the mutex profile. This means it will grow in size until it covers all blocking code paths in your code base. This is not a problem in practice, but might look like a small memory leak if you're observing the memory usage of your process.
+- ⚠ [CPU Profiler Labels](#cpu-profiler-labels) or similar are not supported by mutex profiler. It's difficult to add this feature to the current implementation as it could create a memory leak in the internal hash map that holds the memory profiling data.
 
 ## ThreadCreate Profiler
 
