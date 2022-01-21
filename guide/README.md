@@ -511,6 +511,9 @@ I'm [felixge](https://github.com/felixge) and work at [Datadog](https://www.data
 
 The information on this page is believed to be correct, but no warranty is provided. Feedback is welcome!
 
+Credits:
+- [Nick Ripley](https://github.com/nsrip-dd) for contributing the [Mutex Profiler](#mutex-profiler) section.
+
 <!--
 Notes:
 
