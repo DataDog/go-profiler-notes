@@ -3,12 +3,12 @@
 
 - **[Introduction](#introduction):** [Read This](#read-this) · [Mental Model for Go](#mental-model-for-go) · Profiling vs Tracing
 - **Use Cases:** Reduce Costs · Reduce Latency · Memory Leaks · Program Hanging · Outages
-- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · [Block](#block-profiler) · [Mutex](#mutex-profiler) · Goroutine · [ThreadCreate](#threadcreate-profiler)
+- **[Go Profilers](#go-profilers)**: [CPU](#cpu-profiler) · [Memory](#memory-profiler) · [Block](#block-profiler) · [Mutex](#mutex-profiler) · [Goroutine](#goroutine-profiler) · [ThreadCreate](#threadcreate-profiler)
 - **Viewing Profiles**: Command Line · Flame Graph · Graph
 - **Go Execution Tracer:** Timeline View · Derive Profiles
 - **Go Metrics:**  MemStats
 - **Other Tools:** time · perf · bpftrace
-- **Advanced Topics:** Assembly · Stack Traces · Little's Law
+- **[Advanced Topics](#advanced-topics):** Assembly · [Stack Traces](#stack-traces) · [pprof Format](#pprof-format) · Little's Law
 - **Datadog Products:** Continuous Profiler · APM (Distributed Tracing) · Metrics
 
 🚧 This document is a work in progress. All sections above will become clickable links over time. The best way to find out about updates is to follow me and [my thread on twitter](https://twitter.com/felixge/status/1435537024388304900) where I'll announce new sections being added.
@@ -133,7 +133,7 @@ As with the previous mental model in this guide, everything above is an extremel
 
 Here is an overview of the profilers built into the Go runtime. For more details following the links.
 
-| | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | [Block](#block-profiler) | [Mutex](#mutex-profiler) | Goroutine | [ThreadCreate](#threadcreate-profiler) |
+| | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | [Block](#block-profiler) | [Mutex](#mutex-profiler) | [Goroutine](#goroutine-profiler) | [ThreadCreate](#threadcreate-profiler) |
 |-|-|-|-|-|-|-|
 |Production Safety|✅|✅|✅|✅|⚠️ (1.)|🐞 (2.)|
 |Safe Rate|default|default|`10000`|`100`|`1000` goroutines|-|
@@ -501,9 +501,22 @@ The mutex profiler has limitations similar to the block profiler:
 - ⚠️ There is no size limit for the internal hash map that holds the mutex profile. This means it will grow in size until it covers all blocking code paths in your code base. This is not a problem in practice, but might look like a small memory leak if you're observing the memory usage of your process.
 - ⚠ [CPU Profiler Labels](#cpu-profiler-labels) or similar are not supported by mutex profiler. It's difficult to add this feature to the current implementation as it could create a memory leak in the internal hash map that holds the memory profiling data.
 
+## Goroutine Profiler
+
+This profiler is currently documented in a separate document, see [goroutine.md](../goroutine.md). It will be integrated into this document soon.
+
 ## ThreadCreate Profiler
 
 🐞 The threadcreate profile is intended to show stack traces that led to the creation of new OS threads. However, it's been [broken since 2013](https://github.com/golang/go/issues/6104), so you should stay away from it.
+
+# Advanced Topics
+
+## Stack Traces
+
+This is currently documented in a separate document, see [stack-traces.md](../stack-traces.md). It will be integrated into this document soon.
+## pprof Format
+
+This is currently documented in a separate document, see [pprof.md](../pprof.md). It will be integrated into this document soon.
 
 # Disclaimers
 
