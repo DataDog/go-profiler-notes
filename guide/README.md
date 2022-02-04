@@ -135,15 +135,16 @@ Here is an overview of the profilers built into the Go runtime. For more details
 
 | | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | [Block](#block-profiler) | [Mutex](#mutex-profiler) | [Goroutine](#goroutine-profiler) | [ThreadCreate](#threadcreate-profiler) |
 |-|-|-|-|-|-|-|
-|Production Safety|✅|✅|✅|✅|⚠️ (1.)|🐞 (2.)|
-|Safe Rate|default|default|`10000`|`100`|`1000` goroutines|-|
+|Production Safety|✅|✅|⚠ (1.)|✅|⚠️ (2.)|🐞 (3.)|
+|Safe Rate|default|default|❌ (1.)|`100`|`1000` goroutines|-|
 |Accuracy|⭐️⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|-|
-|Max Stack Depth|`64`|`32`|`32`|`32`|`32` - `100` (3.)|-|
+|Max Stack Depth|`64`|`32`|`32`|`32`|`32` - `100` (4.)|-|
 |Profiler Labels|✅|❌|❌|❌|✅|-|
 
-1. One O(N) stop-the-world pauses where N is the number of goroutines. Expect ~1-10µsec pause per goroutine.
-2. Totally broken, don't try to use it.
-3. Depends on the API.
+1. The block profiler can be a significant source of CPU overhead if configured incorrectly. See the [warning](#block-profiler-limitations).
+2. One O(N) stop-the-world pauses where N is the number of goroutines. Expect ~1-10µsec pause per goroutine.
+3. Totally broken, don't try to use it.
+4. Depends on the API.
 
 <!-- TODO mega snippet to enable all profilers -->
 
@@ -370,7 +371,7 @@ You can control the block profiler via various APIs:
 If you need a quick snippet to paste into your `main()` function, you can use the code below:
 
 ```go
-runtime.SetBlockProfileRate(10000)
+runtime.SetBlockProfileRate(100_000_000) // WARNING: Can cause some CPU overhead
 file, _ := os.Create("./block.pprof")
 defer pprof.Lookup("block").WriteTo(file, 0)
 ```
@@ -425,6 +426,7 @@ In other words, the block profiler shows you which goroutines are experiencing i
 
 ### Block Profiler Limitations
 
+- 🚨 The block profiler can cause significant CPU overhead in production, so it's recommended to only use it for development and testing. If you do need to use it in production, start out with a very high rate, perhaps 100 million, and lower it only if needed. In the past this guide recommended a rate of `10,000` as safe, but we saw production workloads suffering up to 4% overhead under this setting, and even rates up to 10 million were not sufficient to significantly reduce the overhead.
 - ⚠ Block profiles cover only a small subset of [Off-CPU waiting states](https://github.com/golang/go/blob/go1.17.1/src/runtime/runtime2.go#L1053-L1081) a goroutine can enter.
 - ⚠️ The maximum number of nested function calls that can be captured in stack traces by the memory profiler is currently [`32`](https://sourcegraph.com/search?q=context:global+repo:github.com/golang/go+file:src/*+maxStack+%3D&patternType=literal), see [CPU Profiler Limitations](#cpu-profiler-limitations) for more information on what happens when you exceed this limit.
 - ⚠️ There is no size limit for the internal hash map that holds the block profile. This means it will grow in size until it covers all blocking code paths in your code base. This is not a problem in practice, but might look like a small memory leak if you're observing the memory usage of your process.
