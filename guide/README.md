@@ -135,15 +135,16 @@ Here is an overview of the profilers built into the Go runtime. For more details
 
 | | [CPU](#cpu-profiler) | [Memory](#memory-profiler) | [Block](#block-profiler) | [Mutex](#mutex-profiler) | [Goroutine](#goroutine-profiler) | [ThreadCreate](#threadcreate-profiler) |
 |-|-|-|-|-|-|-|
-|Production Safety|✅|✅|✅|✅|⚠️ (1.)|🐞 (2.)|
-|Safe Rate|default|default|`10000`|`100`|`1000` goroutines|-|
+|Production Safety|✅|✅|⚠ (1.)|✅|⚠️ (2.)|🐞 (3.)|
+|Safe Rate|default|default|`100000000`|`100`|`1000` goroutines|-|
 |Accuracy|⭐️⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|⭐⭐⭐|-|
-|Max Stack Depth|`64`|`32`|`32`|`32`|`32` - `100` (3.)|-|
+|Max Stack Depth|`64`|`32`|`32`|`32`|`32` - `100` (4.)|-|
 |Profiler Labels|✅|❌|❌|❌|✅|-|
 
-1. One O(N) stop-the-world pauses where N is the number of goroutines. Expect ~1-10µsec pause per goroutine.
-2. Totally broken, don't try to use it.
-3. Depends on the API.
+1. The block profiler can be a significant source of CPU overhead if configured incorrectly. See the [warning](#block-profiler-limitations).
+2. One O(N) stop-the-world pauses where N is the number of goroutines. Expect ~1-10µsec pause per goroutine.
+3. Totally broken, don't try to use it.
+4. Depends on the API.
 
 <!-- TODO mega snippet to enable all profilers -->
 
@@ -370,7 +371,7 @@ You can control the block profiler via various APIs:
 If you need a quick snippet to paste into your `main()` function, you can use the code below:
 
 ```go
-runtime.SetBlockProfileRate(10000)
+runtime.SetBlockProfileRate(100_000_000)
 file, _ := os.Create("./block.pprof")
 defer pprof.Lookup("block").WriteTo(file, 0)
 ```
@@ -430,6 +431,7 @@ In other words, the block profiler shows you which goroutines are experiencing i
 - ⚠️ There is no size limit for the internal hash map that holds the block profile. This means it will grow in size until it covers all blocking code paths in your code base. This is not a problem in practice, but might look like a small memory leak if you're observing the memory usage of your process.
 - ⚠ [CPU Profiler Labels](#cpu-profiler-labels) or similar are not supported by the block profiler. It's difficult to add this feature to the current implementation as it could create a memory leak in the internal hash map that holds the memory profiling data.
 - 🐞 Go 1.17 fixed a long-standing [sampling bias bug in the block profiler](../block-bias.md). Older versions of Go will overreport the impact of infrequent long blocking events over frequent short events.
+- 🚨 The block profiler can introduce significant CPU overhead if configured incorrectly. The profiler records events based on their duration, so with a sufficiently low rate (even `100,000`, i.e. 100 microseconds) a large portion of mutex locks, channel sends, etc. across all goroutines will be recorded. At Datadog we have seen poor block profiler configuration lead to upwards of 20% of CPU time going to collecting block events for busy services. Enable the profiler in production with caution and prefer high rates if you do (at least `100,000,000`, i.e. 100 milliseconds).
 
 ## Mutex profiler
 
