@@ -339,6 +339,7 @@ The `free_*` counters themselves are not included in the final memory profile. I
 
 There are a few known issues and limitations of the memory profiler that you might want to be aware of:
 
+- 🐞 [GH #49171](https://github.com/golang/go/issues/49171): Delta profiles (taken with e.g. `GET /debug/pprof/allocs?seconds=60`) may report negative allocation counts due to symbolization bug for inlined closures in Go 1.17. It's fixed in Go 1.18.
 - ⚠️ [`runtime.MemProfileRate`](https://pkg.go.dev/runtime#MemProfileRate) must only be modified once, as early as possible in the startup of the program; for example, at the beginning of `main()`. Writing this value is inherently a small data race, and changing it multiple times during program execution will produce incorrect profiles.
 - ⚠ When debugging potential memory leaks, the memory profiler can show you where those allocations were created, but it can't show you which references are keeping them alive. A few attempts to solve this problem were made over the years, but none of them work with recent versions of Go. If you know about a working tool, please [let me know](https://github.com/DataDog/go-profiler-notes/issues).
 - ⚠ [CPU Profiler Labels](#cpu-profiler-labels) or similar are not supported by the memory profiler. It's difficult to add this feature to the current implementation as it could create a memory leak in the internal hash map that holds the memory profiling data.
