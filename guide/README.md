@@ -416,7 +416,7 @@ func random_sample(duration, rate):
   return true
 ```
 
-In other words, if you set `rate` to `10.000` (the unit is nanoseconds), all blocking events lasting `10 µsec` or longer are captured. Additionally `10%` of events lasting `1 µsec` and `1%` of events lasting `1sec`, and so on, are captured as well.
+In other words, if you set `rate` to `10.000` (the unit is nanoseconds), all blocking events lasting `10 µsec` or longer are captured. Additionally `10%` of events lasting `1 µsec` and `1%` of events lasting `100 nanoseconds`, and so on, are captured as well.
 
 ### Block vs Mutex Profiler
 
