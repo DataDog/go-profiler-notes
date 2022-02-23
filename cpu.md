@@ -16,7 +16,7 @@ A  B  A  B  A  A  A  B  A  B  A  A
 10ms
 ```
 
-The resulting [pprof output](./pprof.md) doesn't contain the raw sample events. Instead it aggregates all samples and reports the **samples/count** and **cpu/nanoseconds** values. The latter is [derrived](https://github.com/golang/go/blob/go1.15.6/src/runtime/pprof/proto.go#L354) by multiplying the sample count with the sample period and is therefore redundant. I suspect it's included because pprof doesnt support the count to time conversion, but if anybody has the full story please let me know!
+The resulting [pprof output](./pprof.md) doesn't contain the raw sample events. Instead it aggregates all samples and reports the **samples/count** and **cpu/nanoseconds** values. The latter is [derived](https://github.com/golang/go/blob/go1.15.6/src/runtime/pprof/proto.go#L354) by multiplying the sample count with the sample period and is therefore redundant. I suspect it's included because pprof doesnt support the count to time conversion, but if anybody has the full story please let me know!
 
 Back to the example above, the pprof output file would containing the following:
 
