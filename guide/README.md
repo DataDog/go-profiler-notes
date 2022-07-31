@@ -298,7 +298,7 @@ To keep overhead low, the memory profiler uses poisson sampling so that on avera
 For profiling in production, you should generally not have to modify the sampling rate. The only reason for doing so is if you're worried that not enough samples are getting collected in situations where very few allocations are taking place.
 ### Memory Inuse vs RSS
 
-A common confusion is looking at the total amount of memory reported by the `inuse_space/bytes` sample type, and noticing that it doesn't match up with the RSS memory usage reported by the operating system. There are various reasons for this:
+A common confusion is looking at the total amount of memory reported by the `inuse_space/bytes` sample type, and noticing that it doesn't match up with the [RSS](https://en.wikipedia.org/wiki/Resident_set_size) memory usage reported by the operating system. There are various reasons for this:
 
 - RSS includes a lot more than just Go heap memory usage by definition, e.g. the memory used by goroutine stacks, the program executable, shared libraries as well as memory allocated by C functions.
 - The GC may decide to not return free memory to the OS immediately, but this should be a lesser issue after [runtime changes in Go 1.16](https://golang.org/doc/go1.16#runtime).
