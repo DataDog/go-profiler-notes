@@ -1,7 +1,6 @@
 package main
 
 import (
-	"debug/gosym"
 	"fmt"
 	"os"
 	"runtime"
@@ -15,22 +14,15 @@ func main() {
 }
 
 func run() error {
-	data, err := gopclntab()
+	symTable, err := goSymTable()
 	if err != nil {
-		return fmt.Errorf("gopclntab: %w", err)
+		return err
 	}
-	return debugSymtab(data)
-}
-
-type StackTrace struct {
-	Frames []StackFrame
-}
-
-type StackFrame struct {
-	PC       int
-	Function string
-	File     string
-	Line     int
+	for _, pc := range callers() {
+		file, line, fn := symTable.PCToLine(uint64(pc))
+		fmt.Printf("%x: %s() %s:%d\n", pc, fn.Name, file, line)
+	}
+	return nil
 }
 
 func callers() []uintptr {
@@ -38,17 +30,4 @@ func callers() []uintptr {
 	n := runtime.Callers(2, pcs)
 	pcs = pcs[0:n]
 	return pcs
-}
-
-func debugSymtab(gopclntab []byte) error {
-	table, err := gosym.NewTable(nil, gosym.NewLineTable(gopclntab, 0))
-	if err != nil {
-		return fmt.Errorf("gosym.NewTable: %w", err)
-	}
-
-	for _, pc := range callers() {
-		file, line, fn := table.PCToLine(uint64(pc))
-		fmt.Printf("%x: %s() %s:%d\n", pc, fn.Name, file, line)
-	}
-	return nil
 }

@@ -1,4 +1,5 @@
-//+build linux
+//go:build linux
+// +build linux
 
 package main
 
@@ -9,15 +10,29 @@ import (
 	"os"
 )
 
-func gopclntab() ([]byte, error) {
-	file, err := elf.Open(os.Args[0])
+// from https://github.com/lizrice/debugger-from-scratch/blob/master/symbols.go
+func goSymTable() (*gosym.Table, error) {
+	exe, err := elf.Open(os.Args[0])
 	if err != nil {
-		return nil, fmt.Errorf("elf.Open: %w", err)
+		return nil, nil
 	}
-	for _, s := range file.Sections {
-		if s.Name == ".gopclntab" {
-			return s.Data()
-		}
+	defer exe.Close()
+
+	addr := exe.Section(".text").Addr
+
+	lineTableData, err := exe.Section(".gopclntab").Data()
+	if err != nil {
+		return nil, nil
 	}
-	return nil, errors.New("could not find .gopclntab")
+	lineTable := gosym.NewLineTable(lineTableData, addr)
+	if err != nil {
+		return nil, nil
+	}
+
+	symTableData, err := exe.Section(".gosymtab").Data()
+	if err != nil {
+		return nil, nil
+	}
+
+	return gosym.NewTable(symTableData, lineTable)
 }
