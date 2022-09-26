@@ -202,8 +202,8 @@ The resulting profile will include a new label column and might look something l
 
 |stack trace|label|samples/count|cpu/nanoseconds|
 |-|-|-|-|
-|main.childWork|user:bob|5|50000000|
-|main.childWork|user:alice|2|20000000|
+|main.backgroundWork|user:bob|5|50000000|
+|main.backgroundWork|user:alice|2|20000000|
 |main.work;main.directWork|user:bob|4|40000000|
 |main.work;main.directWork|user:alice|3|30000000|
 
