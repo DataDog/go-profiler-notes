@@ -166,7 +166,7 @@ Below is an example of block profile encoded in [pprof's protobuf format](./ppro
 - contentions/count
 - delay/nanoseconds
 
-The `blockprofilerate` used to create the profile is not included, neither are [profiler labels](./profiler-labels).
+The `blockprofilerate` used to create the profile is not included, neither are profiler labels.
 
 ```
 $ go tool pprof -raw block.pb.gz 

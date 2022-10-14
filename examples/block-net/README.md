@@ -1,6 +1,6 @@
 # block-net
 
-This [program](./main.go) explores the [question](https://twitter.com/rogpeppe/status/1359202847708037124) whether network i/o (e.g. waiting on socket read/write operations) will show up in the [block profiler](/block.md) or not.
+This [program](./main.go) explores the [question](https://twitter.com/rogpeppe/status/1359202847708037124) whether network i/o (e.g. waiting on socket read/write operations) will show up in the [block profiler](../../block.md) or not.
 
 The program does the following:
 
@@ -22,5 +22,5 @@ However, as you can see below, the block profiler [captures](./block.pb.gz) only
 
 ![block-net](./block-net.png)
 
-This means that [block profiler](/block.md) is generally not able to give a good idea about goroutines that are waiting on network i/o. 
+This means that [block profiler](../../block.md) is generally not able to give a good idea about goroutines that are waiting on network i/o. 
 
