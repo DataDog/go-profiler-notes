@@ -1,20 +1,14 @@
-.. Go Observability Guide documentation master file, created by
-   sphinx-quickstart on Sat Dec 24 12:26:52 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Go Profiler Notes
+=================
 
-Welcome to Go Observability Guide's documentation!
-==================================================
+Formerly known as "go-profiler-notes", this guide contains in-depth information
+about Go profiling. In the future, additional topics such as runtime tracing,
+metrics, heap debugging as well as userland metrics and distributed tracing will
+be covered as well.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   about
+   profiling/index
