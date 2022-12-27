@@ -10,7 +10,7 @@ import sphinx_rtd_theme
 
 project = 'Datadog\'s Go Observability Guide'
 copyright = '2022, Datadog'
-author = 'Felix Geisendörfer'
+author = 'Felix Geisendörfer, Nick Ripley'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -25,6 +25,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+html_context = {
+    "display_github": True,
+    "github_user": "DataDog",
+    "github_repo": "go-profiler-notes",
+    "github_version": "sphinx",
+}
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'style_nav_header_background': '#5C2EA0',
