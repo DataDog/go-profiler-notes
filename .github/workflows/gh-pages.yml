@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v2
-      - run: "mkdir -p _site && echo foo > _site/index.html"
+      - uses: ammaraskar/sphinx-action@master
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
 
