@@ -1,3 +1,4 @@
 Sphinx==5.3.0
 sphinx-rtd-theme==1.1.1
 sphinxemoji==0.2.0
+sphinx-autobuild==2021.3.14

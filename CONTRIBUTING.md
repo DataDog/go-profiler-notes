@@ -7,7 +7,7 @@ For local development, follow the steps below:
 1. Install dependencies
 
 ```
-pip install sphinx sphinx-rtd-theme sphinx-autobuild sphinxemoji
+pip install -r docs/requirements.txt
 ```
 
 2. Run the development server
