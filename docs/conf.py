@@ -8,7 +8,7 @@
 
 import sphinx_rtd_theme
 
-project = 'Datadog\'s Go Observability Guide'
+project = 'go-profiler-notes'
 copyright = '2022, Datadog'
 author = 'Felix Geisendörfer, Nick Ripley'
 
@@ -36,6 +36,8 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'style_nav_header_background': '#5C2EA0',
     'collapse_navigation': False,
+    'navigation_depth': 5,
+    'includehidden': False,
 }
 html_static_path = ['_static']
 html_css_files = ['css/custom.css']

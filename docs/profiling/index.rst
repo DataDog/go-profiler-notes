@@ -1,8 +1,8 @@
-Profiling
+Profilers
 =========
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
 
-   builtin-profilers/index
+   cpu-profiler
+   memory-profiler
