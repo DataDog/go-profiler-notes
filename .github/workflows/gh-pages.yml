@@ -24,4 +24,4 @@ jobs:
         if: ${{ github.ref == 'refs/heads/sphinx' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./testt
+          publish_dir: ./test
