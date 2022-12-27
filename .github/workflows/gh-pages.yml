@@ -30,7 +30,8 @@ jobs:
       - uses: ammaraskar/sphinx-action@master
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
-        path: "docs/_build/html"
+        with:
+          path: "docs/_build/html"
 
   # Deployment job
   deploy:
