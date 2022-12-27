@@ -1,22 +1,17 @@
 # Contributing
 
-To build the contents of this repository locally, follow the steps below.
+## Local Development
 
-1. Install sphinx and the read the docs theme
+For local development, follow the steps below:
 
-```
-pip install sphinx sphinx-rtd-theme
-```
-
-2. Build the HTML
+1. Install dependencies
 
 ```
-cd docs
-make html
+pip install sphinx sphinx-rtd-theme sphinx-autobuild sphinxemoji
 ```
 
-3. Open the HTML in your web browser
+2. Run the development server
 
 ```
-open _build/html/index.html
+sphinx-autobuild docs/ docs/_build/html/
 ```
