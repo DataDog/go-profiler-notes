@@ -30,6 +30,7 @@ html_context = {
     "github_user": "DataDog",
     "github_repo": "go-profiler-notes",
     "github_version": "sphinx",
+    "conf_py_path": "/docs/",
 }
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
