@@ -4,7 +4,7 @@ CPU Profiler
 Go's CPU profiler can help you identify which parts of your code base consume a lot of CPU time.
 
 .. note::
-  CPU time is different from the real time experienced by your users (aka latency). For example a typical http request might take ``100ms`` to complete, spending ``5ms`` of time On-CPU while waiting for ``95ms`` on a database. It’s also possible for a request to take ``100ms``, but spend ``200ms`` of CPU if two goroutines are performing CPU intensive work in parallel. If this is confusing to you, please refer to the `Goroutine Scheduler <#goroutine-scheduler>`__ section.
+  CPU time is different from the real time experienced by your users (aka latency). For example a typical http request might take ``100ms`` to complete, spending ``5ms`` of time On-CPU while waiting for ``95ms`` on a database. It’s also possible for a request to take ``100ms``, but spend ``200ms`` of CPU if two goroutines are performing CPU intensive work in parallel. If this is confusing to you, please read about the :doc:`/mental-model-for-go/goroutine-scheduler`.
 
 API
 ---
@@ -13,20 +13,20 @@ You can control the CPU profiler via various APIs:
 
 #. Using the pprof `StartCPUProfile <https://pkg.go.dev/runtime/pprof#StartCPUProfile>`_ and `StopCPUProfile <https://pkg.go.dev/runtime/pprof#StopCPUProfile>`_ API.
 
-   .. literalinclude:: ./cpu-profiler-start-stop.go
+   .. literalinclude:: /code/cpu-profiler-start-stop.go
       :language: go
       :lines: 11-13
       :dedent: 1
 
 #. Passing the ``-cpuprofile`` option to ``go test``.
 
-   .. code:: bash
+   .. code-block:: bash
 
      go test -cpuprofile cpu.pprof
 
 #. Via the ``net/http/pprof`` package.
 
-   .. literalinclude:: ./cpu-profiler-net-http-pprof.go
+   .. literalinclude:: /code/cpu-profiler-net-http-pprof.go
       :language: go
       :lines: 3-
 
@@ -38,7 +38,7 @@ You can control the CPU profiler via various APIs:
 
 #. Control the sampling rate using `SetCPUProfileRate <https://pkg.go.dev/runtime#SetCPUProfileRate>`_.
 
-   .. code:: go
+   .. code-block:: go
 
      runtime.SetCPUProfileRate(200) // 200 Hz, default is 100
 
@@ -46,7 +46,7 @@ You can control the CPU profiler via various APIs:
 
 #. Use `SetCgoTraceback <https://pkg.go.dev/runtime#SetCgoTraceback>`_ to get stack traces for cgo code.
 
-   .. code:: go
+   .. code-block:: go
 
      import _ github.com/benesch/cgosymbolizer
 
@@ -54,14 +54,14 @@ You can control the CPU profiler via various APIs:
 
 #. Record the individual CPU profile samples into a `runtime/trace <https://pkg.go.dev/runtime/trace>`_ (since Go 1.19).
 
-   .. literalinclude:: ./cpu-profiler-trace.go
+   .. literalinclude:: /code/cpu-profiler-trace.go
       :language: go
       :lines: 15-20
       :dedent: 1
 
    See `CL 400795 <https://go-review.googlesource.com/c/go/+/400795>`_ for more information.
 
-#. (Commercial) Use a 3rd party library such as `dd-trace-go <https://docs.datadoghq.com/profiler/enabling/go/>`__ for continuous profiling in production.
+#. **Commercial:** Use a 3rd party library such as `dd-trace-go <https://docs.datadoghq.com/profiler/enabling/go/>`__ for continuous profiling in production.
 
 Data
 ----
@@ -103,15 +103,24 @@ The resulting profile will include a new label column and might look something l
 ========================= ========== ============= ===============
 stack trace               label      samples/count cpu/nanoseconds
 ========================= ========== ============= ===============
-main.backgroundWork       user:bob   5             50000000
+main.backgroundWork       user:bob   4             50000000
 main.backgroundWork       user:alice 2             20000000
 main.work;main.directWork user:bob   4             40000000
-main.work;main.directWork user:alice 3             30000000
+main.work;main.directWork user:alice 5             30000000
 ========================= ========== ============= ===============
 
-Viewing the same profile with pprof’s Graph view will also include the labels:
+Viewing the same profile with pprof’s Graph view will also include the labels as shown in :numref:`cpu-profiler-labels`.
+
+.. figure:: /images/cpu-profiler-labels.png
+  :name: cpu-profiler-labels
+  :width: 400
+  :align: center
+
+  pprof labels shown in the Graph view.
 
 How you use these labels is up to you. You might include things such as ``user ids``, ``request ids``, ``http endpoints``, ``subscription plan`` or other data that can allow you to get a better understanding of what types of requests are causing high CPU utilization, even when they are being processed by the same code paths. That being said, using labels will increase the size of your pprof files. So you should probably start with low cardinality labels such as endpoints before moving on to high cardinality labels once you feel confident that they don’t impact the performance of your application.
+
+**Commercial**: Datadog supports `Connecting Go Profiling With Tracing <https://felixge.de/2022/02/11/connecting-go-profiling-with-tracing/>`_ via pprof labels.
 
 .. warning::
   Go 1.17 and below contained several bugs that could cause some profiler labels to be missing from CPU profiles, see Limitations_ for more information.
@@ -153,7 +162,7 @@ you might want to be aware of:
    -  `CL 369741 <https://go-review.googlesource.com/c/go/+/369741>`__: The first batch of samples in a CPU profile had an off-by-one error causing a misattribution of labels.
    -  `CL 369983 <https://go-review.googlesource.com/c/go/+/369983>`__: System goroutines created on behalf of user goroutines (e.g. for garbage collection) incorrectly inherited their parents labels.
 - |:warning:| You can call SetCPUProfileRate_ to adjust the CPU profiler rate before calling StartCPUProfile_. This will print a warning saying ``runtime: cannot set cpu profile rate until previous profile has finished``. However, it still works. This issue was `initially raised here <https://github.com/golang/go/issues/40094>`__, and there is an `accepted proposal for improving the API <https://github.com/golang/go/issues/42502>`__.
-- |:warning:| The maximum number of nested function calls that can be captured in stack traces by the CPU profiler is currently ```64`` <https://sourcegraph.com/search?q=context:global+repo:github.com/golang/go+file:src/*+maxCPUProfStack+%3D&patternType=literal>`__. If your program is using a lot of recursion or other patterns that lead to deep stack depths, your CPU profile will include stack traces that are truncated. This means you will miss parts of the call chain that led to the function that was active at the time the sample was taken.
+- |:warning:| The maximum number of nested function calls that can be captured in stack traces by the CPU profiler is currently `64 <https://sourcegraph.com/search?q=context:global+repo:github.com/golang/go+file:src/*+maxCPUProfStack+%3D&patternType=literal>`__. If your program is using a lot of recursion or other patterns that lead to deep stack depths, your CPU profile will include stack traces that are truncated. This means you will miss parts of the call chain that led to the function that was active at the time the sample was taken.
 
 
 
