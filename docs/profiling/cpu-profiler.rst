@@ -81,8 +81,8 @@ How It Works
 
 The CPU profiler captures this data by asking the operating system to monitor the CPU usage of the application and sends it a ``SIGPROF`` signal for every ``10ms`` of CPU time it consumes. The OS also includes time consumed by the kernel on behalf of the application in this monitoring. Since the signal deliver rate depends on CPU consumption, it’s dynamic and can be up to ``N * 100`` where ``N`` is the number of logical CPU cores on the system and ``100`` is the default sampling rate per CPU second. When a ``SIGPROF`` signal arrives, Go’s signal handler captures a stack trace of the currently active goroutine, and increments the corresponding values in the profile. The ``cpu/nanoseconds`` value is currently directly derived from the sample count, so it is redundant, but convenient.
 
-CPU Profiler Labels
--------------------
+Profiler Labels
+---------------
 
 A cool feature of Go’s CPU profiler is that you can attach arbitrary key value pairs to a goroutine. These labels will be inherited by any goroutine spawned from that goroutine and show up in the resulting profile.
 

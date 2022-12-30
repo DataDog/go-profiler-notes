@@ -26,10 +26,15 @@ Support this project by giving it a |:star:| on GitHub |ico1|
 
 .. toctree::
    :maxdepth: 1
-   :caption: Profilers
+   :caption: Profiling
 
+   profiling/profiler-comparison
    profiling/cpu-profiler
    profiling/memory-profiler
+   profiling/block-profiler
+   profiling/mutex-profiler
+   profiling/goroutine-profiler
+   profiling/thread-create-profiler
 
 .. toctree::
    :maxdepth: 1
