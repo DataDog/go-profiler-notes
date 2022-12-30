@@ -109,10 +109,10 @@ main.work;main.directWork user:bob   4             40000000
 main.work;main.directWork user:alice 5             30000000
 ========================= ========== ============= ===============
 
-Viewing the same profile with pprof’s Graph view will also include the labels as shown in :numref:`cpu-profiler-labels`.
+Viewing the same profile with pprof’s Graph view will also include the labels as shown in :numref:`fig-cpu-profiler-labels`.
 
 .. figure:: /images/cpu-profiler-labels.png
-  :name: cpu-profiler-labels
+  :name: fig-cpu-profiler-labels
   :width: 400
   :align: center
 
@@ -171,7 +171,7 @@ More Information
 
 For even more detailed information, check out the resources below.
 
-`Inside the Go CPU profiler <https://sumercip.com/posts/inside-the-go-cpu-profiler/>`__ (2022-09-26)
+`Inside the Go CPU profiler <https://sumercip.com/posts/inside-the-go-cpu-profiler/>`__ (2022)
   A more in-depth look at the implementation details of the CPU profiler.
-`Profiling Improvements in Go 1.18 <https://felixge.de/2022/02/11/profiling-improvements-in-go-1.18/>`__ (2022-02-11)
+`Profiling Improvements in Go 1.18 <https://felixge.de/2022/02/11/profiling-improvements-in-go-1.18/>`__ (2022)
   Discusses the recent switch from ``setitimer(2)`` to ``timer_create(2)`` as well as improvements to pprof label recording.

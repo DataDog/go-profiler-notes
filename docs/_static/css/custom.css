@@ -3,3 +3,4 @@
 .rst-content a:visited{color: var(--ddpurple);}
 .wy-menu-vertical .caption-text{color: white;}
 .wy-menu-vertical a:active {background-color: var(--ddpurple);}
+figure img{border: 1px solid #ccc;}

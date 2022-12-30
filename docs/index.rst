@@ -14,8 +14,8 @@ Support this project by giving it a |:star:| on GitHub |ico1|
 .. toctree::
    :hidden:
 
-   profiling/index
    mental-model-for-go/index
+   profiling/index
 
 .. toctree::
    :maxdepth: 1
