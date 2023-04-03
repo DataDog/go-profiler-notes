@@ -1,6 +1,6 @@
 ⬅ [Index of all go-profiler-notes](./README.md)
 
-⚠ This page is deprecated in favor of the block profiler section in the [The Busy Developer's Guide to Go Profiling, Tracing and Observability](./guide/README.md#block).
+⚠ This page is deprecated in favor of the block profiler section in the [The Busy Developer's Guide to Go Profiling, Tracing and Observability](./guide/README.md#block-profiler).
 
 [Description](#description) - [Usage](#usage) - [Overhead](#overhead) - [Accuracy](#accuracy) - [Relationship with Mutex Profiling](#relationship-with-mutex-profiling) - [Profiler Labels](#profiler-labels) - [History](#history)
 
