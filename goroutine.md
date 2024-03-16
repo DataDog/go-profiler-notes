@@ -33,7 +33,7 @@ All Goroutine profiling available in Go requires an `O(N)` **stop-the-world** ph
 
 As a rule of thumb, applications that are extremely latency sensitive and make use of thousands of active goroutines might want to be a little careful with goroutine profiling in production. That being said, large number of goroutines, and perhaps even Go itself, might not be good idea for such applications to begin with.
 
-Most applications that don't spawn crazy amounts of goroutines and can tolerate a few ms of ocassional extra latency should have no issues with continous goroutine profiling in production.
+Most applications that don't spawn crazy amounts of goroutines and can tolerate a few ms of occasional extra latency should have no issues with continuous goroutine profiling in production.
 
 ## Goroutine Properties
 
