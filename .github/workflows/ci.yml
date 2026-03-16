@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # main
       - name: Markup Link Checker (mlc)
-        uses: becheran/mlc@v0.15.4
+        uses: becheran/mlc@12daa05c25abad0b622aa49edc2929343fbbfe82 # v0.15.4
         with:
           args: --no-web-links
