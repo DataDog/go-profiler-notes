@@ -20,18 +20,18 @@ func run() error {
 	runtime.SetBlockProfileRate(1)
 	runtime.SetMutexProfileFraction(1)
 
-	aquired := make(chan struct{})
+	acquired := make(chan struct{})
 	var m sync.Mutex
 	m.Lock()
 	go func() {
-		<-aquired
+		<-acquired
 		m.Lock()
-		aquired <- struct{}{}
+		acquired <- struct{}{}
 	}()
-	aquired <- struct{}{}
+	acquired <- struct{}{}
 	time.Sleep(time.Nanosecond)
 	m.Unlock()
-	<-aquired
+	<-acquired
 
 	if err := writeProfile("block"); err != nil {
 		return err
