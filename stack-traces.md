@@ -170,7 +170,7 @@ Last but not least, it's worth noting that Go ships with two `.gopclntab` implem
 > The whole (and *only*) point of unwinders is to make debugging easy when a bug occurs [...]. An unwinder that is several hundred lines long is simply not even *remotely* interesting to me.
 > – [Linus Torvalds](https://lkml.org/lkml/2012/2/10/356)
 
-This lead to the [creation](https://lwn.net/Articles/728339/) of the [ORC unwinder](https://www.kernel.org/doc/html/latest/x86/orc-unwinder.html) which is now available in the kernel as yet another unwinding mechanism. However, ORCs play no role for Go stack traces, we only have to fight with ELFs and DWARFs here.
+This lead to the [creation](https://lwn.net/Articles/728339/) of the [ORC unwinder](https://www.kernel.org/doc/html/latest/arch/x86/orc-unwinder.html) which is now available in the kernel as yet another unwinding mechanism. However, ORCs play no role for Go stack traces, we only have to fight with ELFs and DWARFs here.
 
 The Go compiler always emits DWARF (v4) information for the binaries it produces. The format is standardized, so unlike `gopclntab`, external tools can rely on it. However, the DWARF data is also largely redundant with `gopclntab` and negatively impacts build times and binary sizes. Because of this Rob Pike is proposing to [disable it by default](https://github.com/golang/go/issues/26074), but it's still under discussion.
 
