@@ -22,7 +22,7 @@ A picture is worth a thousand words, so below is an automatically [generated](ht
 
 <img src="./profile.png" alt="profile.proto visualized" style="zoom: 80%;" />
 
-pprof's data format appears to be designed to for efficency, multiple languages and different profile types (CPU, Heap, etc.), but because of this it's very abstract and full of indirection. If you want all the details, follow the links above. If you want the **tl;dr**, keep reading:
+pprof's data format appears to be designed to for efficiency, multiple languages and different profile types (CPU, Heap, etc.), but because of this it's very abstract and full of indirection. If you want all the details, follow the links above. If you want the **tl;dr**, keep reading:
 
 A pprof file contains a list of **stack traces** called *samples* that have one or more numeric **value** associated with them. For a CPU profile the value might be the CPU time duration in nanoseonds that the stack trace was observed for during profiling. For a heap profile it might be the number of bytes allocated. The **value types** themselves are described in the beginning of the file and used to populate the "SAMPLE" drop down in the pprof UI. In addition to the values, each stack trace can also include a set of **labels**. The labels are key-value pairs and can even include a unit. In Go those labels are used for [profiler labels](https://rakyll.org/profiler-labels/).
 
