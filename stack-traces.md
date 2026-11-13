@@ -1,6 +1,6 @@
 ⬅ [Index of all go-profiler-notes](./README.md)
 
-[Introduction](#intrudction) - [Goroutine Stack](#goroutine-stack) ([Stack Layout](#stack-layout), [Real Example](#real-example), [cgo](#cgo)) - [Unwinding](#unwinding) ([Frame Pointer](#frame-pointer), [gopclntab](#gopclntab), [DWARF](#dwarf)) - [Symbolization](#symbolization)
+[Introduction](#introduction) - [Goroutine Stack](#goroutine-stack) ([Stack Layout](#stack-layout), [Real Example](#real-example), [cgo](#cgo)) - [Unwinding](#unwinding) ([Frame Pointer](#frame-pointer), [gopclntab](#gopclntab), [DWARF](#dwarf)) - [Symbolization](#symbolization)
 
 This document was last updated for `go1.16` but probably still applies to older/newer versions for the most parts.
 
@@ -48,7 +48,7 @@ The picture below shows the stack of a sample goroutine that is currently callin
 
 There is a lot going on in this picture, but for now let's focus on the things highlighted in red. To get a stack trace, the first thing we need is the current program counter (`pc`). This is found in a CPU register called `rip` (instruction pointer register) and points to another region of memory that holds the executable machine code of our program. Since we're currently calling `main.foo()`  `rip` is pointing to an instruction within that function. If you're not familiar with registers, you can think of them as special CPU variables that are incredibly fast to access. Some of them, like `rip`, `rsp` or `rbp` have special purposes, while others can be used by compilers as they see fit.
 
-Now that we know the program counter of the current function, it's time to find `pc` values of our callers, i.e. all the `return address (pc)` values that are also highlighted in red. There are various techniques for doing this, which are described in the [Unwinding](#unwinding) section. The end result is a list of program counters that represent a stack trace just like the one you can get from [`runtime.Callers()`](https://golang.org/pkg/runtime/#Callers). Last but not least, these `pc` values are usually translated into human readable file/line/function names as described in the [Symbolization](#symbolization) section below. In Go itself you can simply calll [`runtime.CallerFramers()`](https://golang.org/pkg/runtime/#CallersFrames) to symbolize a list of `pc` values.
+Now that we know the program counter of the current function, it's time to find `pc` values of our callers, i.e. all the `return address (pc)` values that are also highlighted in red. There are various techniques for doing this, which are described in the [Unwinding](#unwinding) section. The end result is a list of program counters that represent a stack trace just like the one you can get from [`runtime.Callers()`](https://golang.org/pkg/runtime/#Callers). Last but not least, these `pc` values are usually translated into human readable file/line/function names as described in the [Symbolization](#symbolization) section below. In Go itself you can simply calll [`runtime.CallersFrames()`](https://golang.org/pkg/runtime/#CallersFrames) to symbolize a list of `pc` values.
 
 ### Real Example
 
@@ -202,7 +202,7 @@ main.main()
 	/path/to/go-profiler-notes/examples/stack-trace/main.go:5
 ```
 
-In the Go runtime, symbolization always uses the symbol information contained in the [gopclntab](#gopclntab) section. This information can also be access via  [`runtime.CallerFramers()`](https://golang.org/pkg/runtime/#CallersFrames).
+In the Go runtime, symbolization always uses the symbol information contained in the [gopclntab](#gopclntab) section. This information can also be access via  [`runtime.CallersFrames()`](https://golang.org/pkg/runtime/#CallersFrames).
 
 3rd party profilers such a Linux perf can't use [gopclntab](#gopclntab) and have to rely on [DWARF](#dwarf) for symbolization instead.
 

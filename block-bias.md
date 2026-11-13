@@ -6,7 +6,7 @@
 
 **tl;dr:** Setting your sampling `rate` too high will bias your results towards infrequent long events over frequent short events.
 
-As described in the [Usage](#usage) section, the block profiler will sample as follows:
+As described in the [Usage](./block.md#usage) section, the block profiler will sample as follows:
 
 - Events with `duration >= rate` will be sampled 100%
 - Events with `duration < rate` have a `duration / rate` chance of getting sampled.
@@ -44,7 +44,7 @@ So given that your application might produce events like this, how will they sho
 
 <img src="./sim/block_sampling_biased.png" style="zoom:80%;" />
 
-So what can we do? Do we always need to live in fear of bias when working with block profiles? No! If the [Overhead](#overhead) for your workload allows it, the simplest solution is to use a low enough `blockprofilerate` in order to capture most blocking events.
+So what can we do? Do we always need to live in fear of bias when working with block profiles? No! If the [Overhead](./block.md#overhead) for your workload allows it, the simplest solution is to use a low enough `blockprofilerate` in order to capture most blocking events.
 
 But perhaps there is an even better way. I'm thinking we could correct for the current bias by keeping the same logic of sampling `duration / rate` fraction of events when `duration < rate`. However, when this happens we could simply multiply the sampled duration by `rate/duration` like this:
 

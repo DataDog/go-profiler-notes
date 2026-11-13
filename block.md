@@ -161,7 +161,7 @@ The block profiler does not support [profiler labels](https://rakyll.org/profile
 
 ## pprof Output
 
-Below is an example of block profile encoded in [pprof's protobuf format](./pprof). There are two value types:
+Below is an example of block profile encoded in [pprof's protobuf format](./pprof.md). There are two value types:
 
 - contentions/count
 - delay/nanoseconds
